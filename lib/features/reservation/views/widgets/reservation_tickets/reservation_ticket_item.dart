@@ -60,7 +60,7 @@ class ReservationTicketListItem extends StatelessWidget {
             ),
           ] else ...[
             Text(
-              'Services : ',
+              'Services: ',
               style: TextStyle(
                 fontSize: 16.sp,
                 color: Colors.black,
@@ -68,18 +68,21 @@ class ReservationTicketListItem extends StatelessWidget {
                 height: 1.6.h,
               ),
             ),
-            InfoText(
-              label: 'Service Name',
-              value: reservationTicket.bookingItems[index].services
-                  .map((service) => service.name)
-                  .join(', '),
-            ),
-            InfoText(
-              label: 'Price',
-              value: reservationTicket.bookingItems[index].services
-                  .map((service) => service.price.toString())
-                  .join(', '),
-            ),
+            for (var service in reservationTicket.bookingItems[index].services) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  InfoText(
+                    label: 'Service Name',
+                    value: service.name,
+                  ),
+                  InfoText(
+                    label: 'Price',
+                    value: service.price.toString(),
+                  ),
+                ],
+              ),
+            ],
           ]
         ],
       ),

@@ -49,10 +49,7 @@ class ReservationTicketBody extends StatelessWidget {
     );
   }
 
-  Future<void> printReceipt({
-    required BuildContext context,
-    required ReservationTicket reservationTicket,
-  }) async {
+  Future<void> printReceipt({required BuildContext context, required ReservationTicket reservationTicket}) async {
     final cubit = context.read<ReservationCubit>();
 
     await cubit.getDevices();
@@ -72,12 +69,17 @@ Trip Name: ${reservationTicket.ticketName}
 Serial Number: ${item.serialNumber}
 Booking Date: ${item.bookDate}
 Services:
-      ''';
-      for (var service in item.services) {
-        receiptContent += '''
+    ''';
+
+      if (item.services.isEmpty) {
+        receiptContent += '''Service: None\n''';
+      } else {
+        for (var service in item.services) {
+          receiptContent += '''
 Service Name: ${service.name}
 Price: ${service.price}
         ''';
+        }
       }
 
       // Print the content along with QR Code
@@ -91,14 +93,20 @@ Price: ${service.price}
     await cubit.printerService.disconnect();
   }
 
-  String generateQRCodeContent(
-      ReservationTicket reservationTicket, var bookingItem) {
+  String generateQRCodeContent(ReservationTicket reservationTicket, var bookingItem) {
+    // Include services in the QR code content
+    String servicesContent = bookingItem.services.isEmpty
+        ? "Service: None"
+        : bookingItem.services.map((service) => "Service Name: ${service.name}, Price: ${service.price}").join(", ");
+
     return '''
 Booking ID: ${reservationTicket.bookingId}
 Name: ${reservationTicket.bookingItems.map((e) => e.name).join(', ')}
 Trip Name: ${reservationTicket.ticketName}
 Serial Number: ${bookingItem.serialNumber}
-Booking Date: ${bookingItem.bookDate}\n
-    ''';
+Booking Date: ${bookingItem.bookDate}
+Services: $servicesContent\n
+  ''';
   }
+
 }
