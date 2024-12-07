@@ -16,13 +16,21 @@ class _TicketDataState extends State<TicketData> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TicketCubit, TicketState>(
+      buildWhen: (previousState, currentState) =>
+          currentState is TicketLoading ||
+          currentState is TicketFailure ||
+          currentState is TicketSuccess,
       builder: (context, state) {
         final cubit = context.read<TicketCubit>();
-        if(state is TicketLoading){
-          return CircularProgressIndicator(color: AppColors.blue,);
-        }else if(state is TicketFailure){
-          return Center(child: Text(state.message),);
-        }else if(state is TicketSuccess){
+        if (state is TicketLoading) {
+          return const CircularProgressIndicator(
+            color: AppColors.blue,
+          );
+        } else if (state is TicketFailure) {
+          return Center(
+            child: Text(state.message),
+          );
+        } else if (state is TicketSuccess) {
           return Column(
             children: [
               CustomDropdown<Nationality>(
@@ -71,9 +79,8 @@ class _TicketDataState extends State<TicketData> {
               ),
             ],
           );
-
-        }else{
-          return Text("Unexpected Error");
+        } else {
+          return const Text("Unexpected Error");
         }
       },
     );

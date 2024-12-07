@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orange_bay/core/utils/app_colors.dart';
 import 'package:orange_bay/features/reservation/views/manager/reservation_cubit.dart';
 import 'package:orange_bay/features/reservation/views/manager/reservation_state.dart';
@@ -29,24 +28,13 @@ class _ReservationTicketsBodyState extends State<ReservationTicketsBody> {
     return BlocBuilder<ReservationCubit, ReservationState>(
       builder: (context, state) {
         if (state is ReservationTicketLoading) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(color: AppColors.blue),
           );
         } else if (state is ReservationTicketSuccess) {
-          return state.reservationTicket.bookingItems.isEmpty
-              ? Center(
-                  child: Text(
-                    'No Reservations',
-                    style: TextStyle(
-                      color: AppColors.blue,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.sp,
-                    ),
-                  ),
-                )
-              : ReservationTicketBody(
-                  reservationTicket: state.reservationTicket,
-                );
+          return ReservationTicketBody(
+            reservationTicket: state.reservationTicket,
+          );
         } else if (state is ReservationTicketFailed) {
           return Center(
             child: Text(state.message),

@@ -20,30 +20,43 @@ class ReservationBody extends StatelessWidget {
           currentState is ReservationFailed,
       builder: (context, state) {
         if (state is ReservationLoading) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(
               color: AppColors.blue,
             ),
           );
         } else if (state is ReservationSuccess) {
-          return ListView.builder(
-            itemCount: state.reservations.length,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.h),
-                child: ReservationItem(
-                  reservation: state.reservations[index],
+          if (state.reservations.isEmpty) {
+            return Center(
+              child: Text(
+                'No Reservations',
+                style: TextStyle(
+                  color: AppColors.blue,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.sp,
                 ),
-              );
-            },
-          );
+              ),
+            );
+          } else {
+            return ListView.builder(
+              itemCount: state.reservations.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.h),
+                  child: ReservationItem(
+                    reservation: state.reservations[index],
+                  ),
+                );
+              },
+            );
+          }
         } else if (state is ReservationFailed) {
           return Center(
             child: Text(state.message),
           );
         } else {
           context.pop();
-          return Center(
+          return const Center(
             child: Text('Something went wrong'),
           );
         }

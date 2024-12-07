@@ -47,24 +47,24 @@ class ReservationItem extends StatelessWidget {
                   children: [
                     Text(
                       reservation.role,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       reservation.nameOfUser,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
                 ),
-                Spacer(),
+                const Spacer(),
                 Text(
                   reservation.id.toString(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
@@ -107,9 +107,11 @@ class ReservationItem extends StatelessWidget {
                 8.verticalSpace,
                 ReservationTextDetails(
                   title: 'Additional Services: ',
-                  value: reservation.addtionalServices
-                      .map((service) => service.name)
-                      .join(', '),
+                  value: reservation.addtionalServices.isNotEmpty
+                      ? reservation.addtionalServices
+                          .map((service) => service.name)
+                          .join(', ')
+                      : 'None',
                 ),
                 8.verticalSpace,
                 ReservationTextDetails(

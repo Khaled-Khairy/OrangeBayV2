@@ -48,27 +48,39 @@ class ReservationTicketListItem extends StatelessWidget {
             label: 'Booking Date',
             value: reservationTicket.bookingItems[index].bookDate,
           ),
-          Text(
-            'Services : ',
-            style: TextStyle(
-              fontSize: 16.sp,
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              height: 1.6.h,
+          if (reservationTicket.bookingItems[index].services.isEmpty) ...[
+            Text(
+              'Services: None',
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+                height: 1.6.h,
+              ),
             ),
-          ),
-          InfoText(
-            label: 'Service Name',
-            value: reservationTicket.bookingItems[index].services
-                .map((service) => service.name)
-                .join(', '),
-          ),
-          InfoText(
-            label: 'Price',
-            value: reservationTicket.bookingItems[index].services
-                .map((service) => service.price.toString())
-                .join(', '),
-          ),
+          ] else ...[
+            Text(
+              'Services : ',
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+                height: 1.6.h,
+              ),
+            ),
+            InfoText(
+              label: 'Service Name',
+              value: reservationTicket.bookingItems[index].services
+                  .map((service) => service.name)
+                  .join(', '),
+            ),
+            InfoText(
+              label: 'Price',
+              value: reservationTicket.bookingItems[index].services
+                  .map((service) => service.price.toString())
+                  .join(', '),
+            ),
+          ]
         ],
       ),
     );

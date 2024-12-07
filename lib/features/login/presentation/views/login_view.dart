@@ -101,6 +101,7 @@ class _LoginViewState extends State<LoginView> {
                     key: cubit.formKey,
                     child: SingleChildScrollView(
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(

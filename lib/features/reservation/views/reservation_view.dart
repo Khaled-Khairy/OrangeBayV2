@@ -10,14 +10,14 @@ class ReservationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ReservationAppBar(),
+      appBar: const ReservationAppBar(),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: ReservationBody(),
+          child: const ReservationBody(),
         ),
       ),
-      floatingActionButton: ReservationFloatingButton(),
+      floatingActionButton: const ReservationFloatingButton(),
     );
   }
 }
