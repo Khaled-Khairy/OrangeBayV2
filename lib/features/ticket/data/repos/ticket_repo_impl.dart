@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:orange_bay/core/utils/api_failure.dart';
 import 'package:orange_bay/core/utils/app_dio.dart';
+import 'package:orange_bay/features/ticket/data/models/additional_services_model.dart';
 import 'package:orange_bay/features/ticket/data/models/order/order_request.dart';
 import 'package:orange_bay/features/ticket/data/models/order/order_response.dart';
 import 'package:orange_bay/features/ticket/data/models/orders_model.dart';
@@ -46,7 +47,8 @@ class TicketRepoImpl implements TicketRepo {
   }
 
   @override
-  Future<Either<ServerFailure, List<OrdersModel>>> getOrders({required String orderId}) async {
+  Future<Either<ServerFailure, List<OrdersModel>>> getOrders(
+      {required String orderId}) async {
     try {
       final response = await AppDio.get(
         endPoint: 'http://elgzeraapp.runasp.net/api/orders/$orderId',
@@ -56,6 +58,27 @@ class TicketRepoImpl implements TicketRepo {
         orders.add(OrdersModel.fromJson(order));
       }
       return Right(orders);
+    } catch (e) {
+      if (e is DioException) {
+        return Left(ServerFailure.fromDioException(e));
+      } else {
+        return left(ServerFailure(e.toString()));
+      }
+    }
+  }
+
+  @override
+  Future<Either<ServerFailure, List<AdditionalServicesModel>>>
+      getAdditionalServices() async {
+    try {
+      final response = await AppDio.get(
+        endPoint: 'http://elgzeraapp.runasp.net/api/AddtionalServices',
+      );
+      final List<AdditionalServicesModel> additionalServices = [];
+      for (var additionalService in response.data) {
+        additionalServices.add(AdditionalServicesModel.fromJson(additionalService));
+      }
+      return Right(additionalServices);
     } catch (e) {
       if (e is DioException) {
         return Left(ServerFailure.fromDioException(e));

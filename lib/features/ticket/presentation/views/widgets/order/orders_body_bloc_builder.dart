@@ -26,8 +26,7 @@ class OrdersBodyBlocBuilder extends StatelessWidget {
             child: Text(state.message),
           );
         } else if (state is OrdersSuccess) {
-          final List<SerialNumber> serialNumbers =
-              state.ordersModel.expand((order) => order.serialNumbers).toList();
+          final List<SerialNumber> serialNumbers = state.ordersModel.expand((order) => order.serialNumbers).toList();
           return OrdersBody(
             serialNumbers: serialNumbers,
           );

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,7 +34,7 @@ class TicketGridView extends StatelessWidget {
             ),
             itemBuilder: (context, index) {
               if (index >= filteredTickets.length) {
-                return const SizedBox(); // Avoid out-of-range errors
+                return const SizedBox();
               }
 
               final ticket = filteredTickets[index];
@@ -49,15 +47,6 @@ class TicketGridView extends StatelessWidget {
                 Color(0xFFB4A0C8),
               ];
               final color = colors[index % colors.length];
-
-              // Debugging: Output ticket details
-              log("Ticket Title: ${ticket.title}");
-              for (var detail in ticket.detailsDto) {
-                if (detail.userType == 'Admin') {
-                  log("  User Type: ${detail.userType}, Adult Price: ${detail.adultPrice}, Child Price: ${detail.childPrice}");
-                }
-              }
-
               return GestureDetector(
                 onTap: () {
                   showDialog(
@@ -66,7 +55,7 @@ class TicketGridView extends StatelessWidget {
                       return BlocProvider.value(
                         value: cubit,
                         child: TicketDialog(
-                          ticket: ticket, // Pass the filtered ticket
+                          ticket: ticket,
                           index: index,
                         ),
                       );
@@ -76,8 +65,12 @@ class TicketGridView extends StatelessWidget {
                 child: TicketGridViewItem(
                   color: color,
                   title: ticket.title,
-                  adultPrice: ticket.detailsDto.firstWhere((detail) => detail.userType == 'Admin').adultPrice,
-                  childPrice: ticket.detailsDto.firstWhere((detail) => detail.userType == 'Admin').childPrice,
+                  adultPrice: ticket.detailsDto
+                      .firstWhere((detail) => detail.userType == 'Admin')
+                      .adultPrice,
+                  childPrice: ticket.detailsDto
+                      .firstWhere((detail) => detail.userType == 'Admin')
+                      .childPrice,
                 ),
               );
             },

@@ -9,10 +9,6 @@ import 'package:orange_bay/features/add%20and%20refund/presentation/views/refund
 import 'package:orange_bay/features/admin/presentation/views/admin_home_view.dart';
 import 'package:orange_bay/features/admin/presentation/views/card_info_view.dart';
 import 'package:orange_bay/features/card%20activation/presentation/views/card_activation_view.dart';
-import 'package:orange_bay/features/cashier/presentation/views/balance_view.dart';
-import 'package:orange_bay/features/cashier/presentation/views/cartItems_view.dart';
-import 'package:orange_bay/features/cashier/presentation/views/cashier_home_view.dart';
-import 'package:orange_bay/features/cashier/presentation/views/transactions_history_view.dart';
 import 'package:orange_bay/features/login/presentation/views/login_view.dart';
 import 'package:orange_bay/features/register/presentation/views/register_view.dart';
 import 'package:orange_bay/features/replacement_card/presentation/views/replacment_card_view.dart';
@@ -85,7 +81,7 @@ abstract class AppRouter {
         path: ticket,
         builder: (BuildContext context, GoRouterState state) => BlocProvider(
           create: (context) => TicketCubit(TicketRepoImpl()),
-          child: TicketView(),
+          child: const TicketView(),
         ),
       ),
       GoRoute(
@@ -93,7 +89,7 @@ abstract class AppRouter {
         builder: (BuildContext context, GoRouterState state) => BlocProvider(
           create: (context) =>
               ReservationCubit(ReservationRepoImpl())..getReservations(),
-          child: ReservationView(),
+          child: const ReservationView(),
         ),
       ),
       GoRoute(
@@ -115,13 +111,6 @@ abstract class AppRouter {
         path: tourGuideProfit,
         builder: (BuildContext context, GoRouterState state) =>
             const TourGuideProfitView(),
-      ),
-      GoRoute(
-        path: cashier,
-        builder: (BuildContext context, GoRouterState state) =>
-            const ConnectivityWrapper(
-          child: CashierHomeView(),
-        ),
       ),
       GoRoute(
         path: cardActivation,
@@ -204,27 +193,12 @@ abstract class AppRouter {
             const CardInfoView(),
       ),
       GoRoute(
-        path: cartItems,
-        builder: (BuildContext context, GoRouterState state) =>
-            const CartItemsView(),
-      ),
-      GoRoute(
         path: verifyPayment,
         builder: (BuildContext context, GoRouterState state) =>
             const CardVerificationView(
           textMsg: 'قم بتمرير الكارت',
           newScreen: AppRouter.cashier,
         ),
-      ),
-      GoRoute(
-        path: transactionHistory,
-        builder: (BuildContext context, GoRouterState state) =>
-            const TransactionsHistoryView(),
-      ),
-      GoRoute(
-        path: balance,
-        builder: (BuildContext context, GoRouterState state) =>
-            const BalanceView(),
       ),
     ],
   );

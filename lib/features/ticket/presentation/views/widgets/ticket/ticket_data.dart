@@ -39,9 +39,7 @@ class _TicketDataState extends State<TicketData> {
                 itemName: (item) => item.name,
                 selectedItem: cubit.selectedNationality,
                 onChanged: (value) {
-                  setState(() {
-                    cubit.selectedNationality = value;
-                  });
+                  cubit.selectedNationality = value;
                 },
               ),
               CustomDropdown<Harbour>(
@@ -50,9 +48,7 @@ class _TicketDataState extends State<TicketData> {
                 itemName: (item) => item.name,
                 selectedItem: cubit.selectedHarbour,
                 onChanged: (value) {
-                  setState(() {
-                    cubit.selectedHarbour = value;
-                  });
+                  cubit.selectedHarbour = value;
                 },
               ),
               CustomDropdown<TourGuide>(
@@ -61,9 +57,7 @@ class _TicketDataState extends State<TicketData> {
                 itemName: (item) => item.name,
                 selectedItem: cubit.selectedGuide,
                 onChanged: (value) {
-                  setState(() {
-                    cubit.selectedGuide = value;
-                  });
+                  cubit.selectedGuide = value;
                 },
               ),
               CustomDropdown<Cruise>(
@@ -72,9 +66,7 @@ class _TicketDataState extends State<TicketData> {
                 itemName: (item) => item.name,
                 selectedItem: cubit.selectedCruise,
                 onChanged: (value) {
-                  setState(() {
-                    cubit.selectedCruise = value;
-                  });
+                  cubit.selectedCruise = value;
                 },
               ),
             ],
