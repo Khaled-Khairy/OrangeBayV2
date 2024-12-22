@@ -132,8 +132,7 @@ class _TicketDialogState extends State<TicketDialog> {
     int childQuantity = int.tryParse(childCountController.text) ?? 0;
 
     // Calculate total price
-    int totalPrice =
-        (adultPrice * adultQuantity) + (childPrice * childQuantity);
+    int totalPrice = (adultPrice * adultQuantity) + (childPrice * childQuantity);
 
     // Check if quantities are valid
     if (adultQuantity == 0 && childQuantity == 0) {

@@ -125,11 +125,12 @@ class ReservationItem extends StatelessWidget {
                     ReservationButton(
                       title: 'Print',
                       onTap: () {
-                        context.push(
+                        context.pushReplacement(
                           AppRouter.reservationTickets,
                           extra: reservation.id.toString(),
                         );
                       },
+                      isPrinted: reservation.isPrinted,
                     ),
                   ],
                 )

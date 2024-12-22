@@ -6,4 +6,5 @@ import 'package:orange_bay/models/order_model.dart';
 abstract class ReservationRepo {
   Future<Either<ServerFailure, List<Reservations>>> getReservations({required String dateTo, required String dateFrom,required int type});
   Future<Either<ServerFailure, List<OrderModel>>> getReservationTickets({required String orderId});
+  Future<Either<ServerFailure, String>> printOrder({required String orderId});
 }

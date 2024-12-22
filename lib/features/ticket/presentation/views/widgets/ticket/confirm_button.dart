@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orange_bay/core/utils/app_toast.dart';
 import 'package:orange_bay/core/widgets/custom_button.dart';
-import 'package:orange_bay/features/ticket/data/models/order/order_request.dart';
 import 'package:orange_bay/features/ticket/presentation/manager/ticket_cubit/ticket_cubit.dart';
 
 class ConfirmButton extends StatelessWidget {

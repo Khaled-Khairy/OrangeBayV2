@@ -13,7 +13,9 @@ class ReservationRepoImpl implements ReservationRepo {
       required String dateFrom,
       required int type}) async {
     try {
-      final response = await AppDio.get(endPoint: 'http://elgzeraapp.runasp.net/api/orders/GetByDate?Fromdate=$dateFrom&ToDate=$dateTo&Type=$type');
+      final response = await AppDio.get(
+        endPoint: 'http://elgzeraapp.runasp.net/api/orders/GetByDate?Fromdate=$dateFrom&ToDate=$dateTo&Type=$type',
+      );
       final List<Reservations> reservations = [];
 
       for (var reservation in response.data['valueOrDefault']) {
@@ -33,12 +35,33 @@ class ReservationRepoImpl implements ReservationRepo {
   Future<Either<ServerFailure, List<OrderModel>>> getReservationTickets(
       {required String orderId}) async {
     try {
-      final response = await AppDio.get(endPoint: 'http://elgzeraapp.runasp.net/api/orders/$orderId');
+      final response = await AppDio.get(
+          endPoint: 'http://elgzeraapp.runasp.net/api/orders/$orderId');
       final List<OrderModel> reservationTickets = [];
       for (var reservation in response.data) {
         reservationTickets.add(OrderModel.fromJson(reservation));
       }
       return Right(reservationTickets);
+    } catch (e) {
+      if (e is DioException) {
+        return Left(ServerFailure.fromDioException(e));
+      } else {
+        return left(ServerFailure(e.toString()));
+      }
+    }
+  }
+
+  @override
+  Future<Either<ServerFailure, String>> printOrder(
+      {required String orderId}) async {
+    try {
+      final response = await AppDio.put(
+        endPoint: 'http://elgzeraapp.runasp.net/api/orders/Print',
+        body: {
+          "bookId": orderId,
+        },
+      );
+      return Right(response.data['value']);
     } catch (e) {
       if (e is DioException) {
         return Left(ServerFailure.fromDioException(e));

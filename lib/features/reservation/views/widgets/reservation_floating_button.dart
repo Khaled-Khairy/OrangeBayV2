@@ -24,7 +24,7 @@ class ReservationFloatingButton extends StatelessWidget {
         if (toDate == null || toDate.isBefore(fromDate)) {
           AppToast.displayToast(
             message: 'The "To" date must be after the "From" date',
-            isError: false,
+            isError: true,
           );
           return;
         }
