@@ -19,8 +19,7 @@ class TicketDetailsBlocBuilder extends StatefulWidget {
   final Ticket ticket;
 
   @override
-  State<TicketDetailsBlocBuilder> createState() =>
-      _TicketDetailsBlocBuilderState();
+  State<TicketDetailsBlocBuilder> createState() => _TicketDetailsBlocBuilderState();
 }
 
 class _TicketDetailsBlocBuilderState extends State<TicketDetailsBlocBuilder> {

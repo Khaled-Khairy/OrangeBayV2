@@ -26,17 +26,6 @@ class TicketCubit extends Cubit<TicketState> {
   List<List<AdditionalServicesModel>> selectedAdultServices = [];
   List<List<AdditionalServicesModel>> selectedChildServices = [];
 
-  num get totalPrice {
-    return orderedTickets.fold(0.0, (sum, ticket) {
-      final ticketTotalPrice =
-          ticket.orderItemDetails.fold(0.0, (subSum, detail) {
-        return subSum + detail.ticketPrice.toDouble();
-      });
-
-      return sum + ticketTotalPrice;
-    });
-  }
-
   Future<void> getAllTickets() async {
     emit(TicketLoading());
     final result = await ticketRepo.getAllTickets();

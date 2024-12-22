@@ -62,6 +62,7 @@ class TicketGridView extends StatelessWidget {
                     },
                   );
                 },
+                //TODO: add filters
                 child: TicketGridViewItem(
                   color: color,
                   title: ticket.title,

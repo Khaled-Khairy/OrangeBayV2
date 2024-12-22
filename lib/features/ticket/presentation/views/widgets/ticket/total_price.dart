@@ -25,10 +25,8 @@ class TotalPrice extends StatelessWidget {
             buildWhen: (previousState, currentState) =>
             currentState is TicketUpdated,
             builder: (context, state) {
-              final totalPrice = context.read<TicketCubit>().totalPrice;
-
               return Text(
-                '$totalPrice\$',
+                '100\$',
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,

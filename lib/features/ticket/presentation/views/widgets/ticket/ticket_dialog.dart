@@ -108,12 +108,9 @@ class _TicketDialogState extends State<TicketDialog> {
   }
 
   void onAddButtonPressed() {
-    // Filter the detailsDto to only include tickets with 'Admin' userType
     var adminDetails = widget.ticket.detailsDto
         .where((detail) => detail.userType == 'Admin')
         .toList();
-
-    // If no 'Admin' details are found, display a toast and return
     if (adminDetails.isEmpty) {
       AppToast.displayToast(
         message: 'No Admin tickets available.',
@@ -122,19 +119,12 @@ class _TicketDialogState extends State<TicketDialog> {
       Navigator.pop(context);
       return;
     }
-
-    // Get the admin price details
     int adultPrice = adminDetails.first.adultPrice.toInt();
     int childPrice = adminDetails.first.childPrice.toInt();
 
-    // Get quantities from controllers
     int adultQuantity = int.tryParse(adultCountController.text) ?? 0;
     int childQuantity = int.tryParse(childCountController.text) ?? 0;
 
-    // Calculate total price
-    int totalPrice = (adultPrice * adultQuantity) + (childPrice * childQuantity);
-
-    // Check if quantities are valid
     if (adultQuantity == 0 && childQuantity == 0) {
       AppToast.displayToast(
         message: 'Please enter a valid quantity for adults or children',
@@ -157,7 +147,8 @@ class _TicketDialogState extends State<TicketDialog> {
             padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
             child: TicketDetailsBlocBuilder(
               adultQuantity: adultQuantity,
-              childQuantity: childQuantity, ticket: widget.ticket,
+              childQuantity: childQuantity,
+              ticket: widget.ticket,
             ),
           ),
         );

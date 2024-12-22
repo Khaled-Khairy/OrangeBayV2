@@ -7,8 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class ServicesDropdown extends StatefulWidget {
   final List<AdditionalServicesModel> additionalServices;
   final String type;
-  final ValueChanged<List<AdditionalServicesModel>>
-      onServiceSelected; // Callback
+  final ValueChanged<List<AdditionalServicesModel>>onServiceSelected;
   const ServicesDropdown({
     super.key,
     required this.type,
@@ -37,8 +36,7 @@ class _ServicesDropdownState extends State<ServicesDropdown> {
         (service) {
           return DropdownItem<AdditionalServicesModel>(
             value: service,
-            label:
-                '${service.name} - Price: ${widget.type == 'adult' ? service.adultPrice : service.childPrice}',
+            label: '${service.name} - Price: ${widget.type == 'adult' ? service.adultPrice : service.childPrice}',
           );
         },
       ).toList(),

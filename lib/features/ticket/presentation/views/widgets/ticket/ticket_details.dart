@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orange_bay/core/utils/app_colors.dart';
+import 'package:orange_bay/core/utils/app_toast.dart';
 import 'package:orange_bay/core/widgets/custom_button.dart';
 import 'package:orange_bay/features/ticket/data/models/additional_services_model.dart';
 import 'package:orange_bay/features/ticket/data/models/order/order_request.dart';
@@ -49,15 +50,207 @@ class _TicketDetailsState extends State<TicketDetails> {
 
   @override
   void dispose() {
+    emailController.dispose();
+    phoneNumberController.dispose();
     for (var controller in adultControllers) {
       controller.dispose();
     }
     for (var controller in childControllers) {
       controller.dispose();
     }
-    emailController.dispose();
-    phoneNumberController.dispose();
     super.dispose();
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+    );
+  }
+
+  Widget _buildInputField(TextEditingController controller, String hint,
+      {TextInputType? type, List<TextInputFormatter>? inputFormatters}) {
+    return TicketDetailsInputField(
+      controller: controller,
+      hint: hint,
+      type: type,
+      inputFormatters: inputFormatters,
+    );
+  }
+
+  Widget _buildServicesDropdown(
+      List<AdditionalServicesModel> additionalServices,
+      String type,
+      int index) {
+    final cubit = context.read<TicketCubit>();
+
+    if (type == 'adult' && cubit.selectedAdultServices.length <= index) {
+      cubit.selectedAdultServices
+          .add(List<AdditionalServicesModel>.empty(growable: true));
+    } else if (type == 'child' && cubit.selectedChildServices.length <= index) {
+      cubit.selectedChildServices
+          .add(List<AdditionalServicesModel>.empty(growable: true));
+    }
+
+    return ServicesDropdown(
+      additionalServices: additionalServices,
+      type: type,
+      onServiceSelected: (List<AdditionalServicesModel> value) {
+        if (type == 'adult') {
+          cubit.selectedAdultServices[index] = value;
+        } else {
+          cubit.selectedChildServices[index] = value;
+        }
+      },
+    );
+  }
+
+  List<Widget> _buildPersonDetails(
+      int quantity, List<TextEditingController> controllers, String type) {
+    return List.generate(
+      quantity,
+      (index) => Column(
+        spacing: 6.h,
+        children: [
+          _buildInputField(controllers[index], '$type Name ${index + 1}'),
+          _buildServicesDropdown(
+            widget.additionalServices,
+            type.toLowerCase(),
+            index,
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool _validateInputs() {
+    if (widget.childQuantity < 0) {
+      if (emailController.text.trim().isEmpty ||
+          phoneNumberController.text.trim().isEmpty) {
+        AppToast.displayToast(
+          message: 'Email and phone number cannot be empty.',
+          isError: true,
+        );
+        return false;
+      }
+    }
+
+    for (var i = 0; i < widget.adultQuantity; i++) {
+      if (adultControllers[i].text.trim().isEmpty) {
+        AppToast.displayToast(
+          message: 'All adult names must be filled.',
+          isError: true,
+        );
+        return false;
+      }
+    }
+
+    for (var i = 0; i < widget.childQuantity; i++) {
+      if (childControllers[i].text.trim().isEmpty) {
+        AppToast.displayToast(
+          message: 'All child names must be filled.',
+          isError: true,
+        );
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  void _handleAddButtonPressed() {
+    if (!_validateInputs()) return;
+
+    final cubit = context.read<TicketCubit>();
+
+    if (widget.ticket.detailsDto.length <
+        widget.adultQuantity + widget.childQuantity) {
+      AppToast.displayToast(
+        message: 'Insufficient ticket details available.',
+        isError: true,
+      );
+      return;
+    }
+    final tickets = cubit.ticketsModel?.tickets ?? [];
+
+    // Filter tickets where at least one DetailsDto has userType == 'Admin'
+    //TODO: add filtering by ticket type
+    List<Ticket> filteredTickets = tickets.where((ticket) {
+      return ticket.detailsDto.any((detail) => detail.userType == 'Admin');
+    }).toList();
+    try {
+      cubit.addOrderedTicket(
+        OrderItem(
+          orderItemDetails: [
+            ...List.generate(
+              widget.adultQuantity,
+              (index) {
+                final ticket = filteredTickets[index];
+                if (index >= filteredTickets.length) {
+                  throw RangeError(
+                    'Index $index is out of range for adult ticket details.',
+                  );
+                }
+                return OrderItemDetail(
+                  name: ticket.title,
+                  ticketId: ticket.id.toInt(),
+                  ticketPrice: ticket.detailsDto
+                      .firstWhere((detail) => detail.userType == 'Admin')
+                      .adultPrice
+                      .toInt(),
+                  phoneNumber: phoneNumberController.text.trim(),
+                  email: emailController.text.trim(),
+                  additionalServicesPrice: cubit.selectedChildServices[index]
+                      .fold(0, (sum, service) => sum + service.childPrice),
+                  personAge: 1,
+                  services: cubit.selectedAdultServices[index]
+                      .map((service) => service.id)
+                      .toList(),
+                  bookingDate: DateTime.now(),
+                );
+              },
+            ),
+            ...List.generate(
+              widget.childQuantity,
+              (index) {
+                final ticket = filteredTickets[index];
+                final childIndex = widget.childQuantity + index;
+                if (childIndex >= filteredTickets.length) {
+                  throw RangeError(
+                    'Index $childIndex is out of range for child ticket details.',
+                  );
+                }
+                return OrderItemDetail(
+                  name: ticket.title,
+                  ticketId: ticket.id.toInt(),
+                  ticketPrice: ticket.detailsDto
+                      .firstWhere((detail) => detail.userType == 'Admin')
+                      .childPrice
+                      .toInt(),
+                  phoneNumber: phoneNumberController.text.trim(),
+                  email: emailController.text.trim(),
+                  additionalServicesPrice: cubit.selectedChildServices[index]
+                      .fold(0, (sum, service) => sum + service.childPrice),
+                  personAge: 2,
+                  services: cubit.selectedChildServices[index]
+                      .map((service) => service.id)
+                      .toList(),
+                  bookingDate: DateTime.now(),
+                );
+              },
+            ),
+          ],
+          adultQuantity: widget.adultQuantity,
+          childQuantity: widget.childQuantity,
+        ),
+      );
+      context.pop();
+    } catch (e) {
+      AppToast.displayToast(
+        message: e.toString(),
+        isError: true,
+      );
+    }
   }
 
   @override
@@ -66,154 +259,44 @@ class _TicketDetailsState extends State<TicketDetails> {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          spacing: 6.h,
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 4.h,
           children: [
-            if (widget.adultQuantity > 0)
-              const Text(
-                'Adults',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+            if (widget.adultQuantity > 0) _buildSectionTitle('Adults'),
             if (widget.adultQuantity > 0)
               Column(
-                spacing: 2.w,
+                spacing: 6.h,
                 children: [
-                  TicketDetailsInputField(
-                    controller: emailController,
-                    hint: 'Email',
-                  ),
-                  TicketDetailsInputField(
-                    controller: phoneNumberController,
-                    hint: 'Phone Number',
+                  _buildInputField(emailController, 'Email'),
+                  _buildInputField(
+                    phoneNumberController,
+                    'Phone Number',
                     type: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  ),
+                  ..._buildPersonDetails(
+                    widget.adultQuantity,
+                    adultControllers,
+                    'Adult',
                   ),
                 ],
               ),
-            Column(
-              spacing: 6.h,
-              children: List.generate(
-                widget.adultQuantity,
-                (index) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    spacing: 6.w,
-                    children: [
-                      TicketDetailsInputField(
-                        controller: adultControllers[index],
-                        hint: 'Adult Name ${index + 1}',
-                      ),
-                      ServicesDropdown(
-                        additionalServices: widget.additionalServices,
-                        type: 'adult',
-                        onServiceSelected:
-                            (List<AdditionalServicesModel> value) {
-                          final cubit = context.read<TicketCubit>();
-                          cubit.selectedAdultServices[index] = value;
-                        },
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
+            if (widget.childQuantity > 0) _buildSectionTitle('Children'),
             if (widget.childQuantity > 0)
-              const Text(
-                'Children',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+              Column(
+                spacing: 6.h,
+                children: _buildPersonDetails(
+                  widget.childQuantity,
+                  childControllers,
+                  'Child',
                 ),
               ),
-            Column(
-              spacing: 6.h,
-              children: List.generate(
-                widget.childQuantity,
-                (index) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    spacing: 6.w,
-                    children: [
-                      TicketDetailsInputField(
-                        controller: childControllers[index],
-                        hint: 'Child Name ${index + 1}',
-                      ),
-                      ServicesDropdown(
-                        additionalServices: widget.additionalServices,
-                        type: 'child',
-                        onServiceSelected: (List<AdditionalServicesModel> value) {
-                          final cubit = context.read<TicketCubit>();
-                          cubit.selectedChildServices[index] = value;
-                        },
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
             CustomButton(
               backgroundColor: AppColors.blue,
               text: 'Add',
               textColor: Colors.white,
-              onPressed: () {
-                final cubit = context.read<TicketCubit>();
-                cubit.addOrderedTicket(
-                  OrderItem(
-                    orderItemDetails: [
-                      ...List.generate(
-                        widget.adultQuantity,
-                        (index) => OrderItemDetail(
-                          name: adultControllers[index].text,
-                          ticketId: widget.ticket.id.toInt(),
-                          ticketPrice: widget
-                              .ticket.detailsDto[index].adultPrice
-                              .toInt(),
-                          phoneNumber: phoneNumberController.text.trim(),
-                          email: emailController.text.trim(),
-                          additionalServicesPrice: 1000,
-                          personAge: 1,
-                          services: context
-                              .read<TicketCubit>()
-                              .selectedAdultServices[index]
-                              .map((service) => service.id)
-                              .toList(),
-                          bookingDate: DateTime.now(),
-                        ),
-                      ),
-                      ...List.generate(
-                        widget.childQuantity,
-                        (index) => OrderItemDetail(
-                          name: adultControllers[index].text,
-                          ticketId: widget.ticket.id.toInt(),
-                          ticketPrice: widget
-                              .ticket.detailsDto[index].adultPrice
-                              .toInt(),
-                          phoneNumber: phoneNumberController.text.trim(),
-                          email: emailController.text.trim(),
-                          additionalServicesPrice: 1000,
-                          personAge: 2,
-                          services: context
-                              .read<TicketCubit>()
-                              .selectedChildServices[index]
-                              .map((service) => service.id)
-                              .toList(),
-                          bookingDate: DateTime.now(),
-                        ),
-                      ),
-                    ],
-                    adultQuantity: widget.adultQuantity,
-                    childQuantity: widget.childQuantity,
-                  ),
-                );
-                context.pop();
-              },
-            )
+              onPressed: _handleAddButtonPressed,
+            ),
           ],
         ),
       ),
