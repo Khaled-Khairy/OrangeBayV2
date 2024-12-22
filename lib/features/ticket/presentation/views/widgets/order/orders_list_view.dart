@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:orange_bay/features/ticket/data/models/orders_model.dart';
+import 'package:orange_bay/models/order_model.dart';
 
 import 'order_item.dart';
 

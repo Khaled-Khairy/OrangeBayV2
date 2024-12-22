@@ -5,9 +5,9 @@ import 'package:orange_bay/core/utils/app_dio.dart';
 import 'package:orange_bay/features/ticket/data/models/additional_services_model.dart';
 import 'package:orange_bay/features/ticket/data/models/order/order_request.dart';
 import 'package:orange_bay/features/ticket/data/models/order/order_response.dart';
-import 'package:orange_bay/features/ticket/data/models/orders_model.dart';
 import 'package:orange_bay/features/ticket/data/models/tickets_model.dart';
 import 'package:orange_bay/features/ticket/data/repos/ticket_repo.dart';
+import 'package:orange_bay/models/order_model.dart';
 
 class TicketRepoImpl implements TicketRepo {
   @override
@@ -47,15 +47,15 @@ class TicketRepoImpl implements TicketRepo {
   }
 
   @override
-  Future<Either<ServerFailure, List<OrdersModel>>> getOrders(
+  Future<Either<ServerFailure, List<OrderModel>>> getOrders(
       {required String orderId}) async {
     try {
       final response = await AppDio.get(
         endPoint: 'http://elgzeraapp.runasp.net/api/orders/$orderId',
       );
-      final List<OrdersModel> orders = [];
+      final List<OrderModel> orders = [];
       for (var order in response.data) {
-        orders.add(OrdersModel.fromJson(order));
+        orders.add(OrderModel.fromJson(order));
       }
       return Right(orders);
     } catch (e) {

@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:orange_bay/features/reservation/data/models/reservation_ticket_model.dart';
+import 'package:orange_bay/models/order_model.dart';
 
 import '../../data/models/reservation_model.dart';
 
@@ -27,7 +27,7 @@ final class ReservationDateUpdated extends ReservationState {}
 final class ReservationTicketLoading extends ReservationState {}
 
 final class ReservationTicketSuccess extends ReservationState {
-  final List<ReservationTicket> reservationTicket;
+  final List<OrderModel> reservationTicket;
 
   ReservationTicketSuccess(this.reservationTicket);
 }

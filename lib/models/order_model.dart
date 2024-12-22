@@ -1,14 +1,14 @@
-class ReservationTicket {
+class OrderModel {
   final int quantity;
   final List<SerialNumber> serialNumbers;
 
-  ReservationTicket({
+  OrderModel({
     required this.quantity,
     required this.serialNumbers,
   });
 
-  factory ReservationTicket.fromJson(Map<String, dynamic> json) {
-    return ReservationTicket(
+  factory OrderModel.fromJson(Map<String, dynamic> json) {
+    return OrderModel(
       quantity: json['quantity'],
       serialNumbers: (json['serialNumbers'] as List)
           .map((item) => SerialNumber.fromJson(item))

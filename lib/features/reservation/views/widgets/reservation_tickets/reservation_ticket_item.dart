@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orange_bay/core/widgets/info_text.dart';
-import 'package:orange_bay/features/reservation/data/models/reservation_ticket_model.dart';
 import 'package:orange_bay/features/reservation/views/widgets/reservation_tickets/reservation_qr_code.dart';
+import 'package:orange_bay/models/order_model.dart';
 
 class ReservationTicketListItem extends StatelessWidget {
   const ReservationTicketListItem({
@@ -26,7 +26,7 @@ class ReservationTicketListItem extends StatelessWidget {
         border: Border.all(color: Colors.grey),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Center(
             child: ReservationQrCode(
@@ -94,24 +94,26 @@ class ReservationTicketListItem extends StatelessWidget {
             )
           else
             Column(
-              children: reservationTicket.additionalServiceResponses.map((service) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.h),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InfoText(
-                        label: 'Service Name',
-                        value: service.name,
-                      ),
-                      InfoText(
-                        label: 'Price',
-                        value: '${service.price.toStringAsFixed(2)} SAR',
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
+              children: reservationTicket.additionalServiceResponses.map(
+                (service) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4.h),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InfoText(
+                          label: 'Service Name',
+                          value: service.name,
+                        ),
+                        InfoText(
+                          label: 'Price',
+                          value: '${service.price.toStringAsFixed(2)} SAR',
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ).toList(),
             ),
         ],
       ),

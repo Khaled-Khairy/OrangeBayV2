@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:orange_bay/features/ticket/data/models/orders_model.dart';
+import 'package:orange_bay/models/order_model.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QRCodeWidget extends StatelessWidget {

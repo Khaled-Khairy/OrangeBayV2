@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orange_bay/core/utils/app_print.dart';
 import 'package:orange_bay/features/ticket/data/models/additional_services_model.dart';
 import 'package:orange_bay/features/ticket/data/models/order/order_response.dart';
-import 'package:orange_bay/features/ticket/data/models/orders_model.dart';
 import 'package:orange_bay/features/ticket/data/models/tickets_model.dart';
 import 'package:orange_bay/features/ticket/data/repos/ticket_repo.dart';
+import 'package:orange_bay/models/order_model.dart';
 
 import '../../../data/models/order/order_request.dart';
 

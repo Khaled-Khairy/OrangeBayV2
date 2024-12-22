@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:orange_bay/features/ticket/data/models/orders_model.dart';
 import 'package:orange_bay/core/widgets/info_text.dart';
 import 'package:orange_bay/features/ticket/presentation/views/widgets/order/qr_code.dart';
+import 'package:orange_bay/models/order_model.dart';
 
 class OrderItem extends StatelessWidget {
   final SerialNumber serialNumbers;

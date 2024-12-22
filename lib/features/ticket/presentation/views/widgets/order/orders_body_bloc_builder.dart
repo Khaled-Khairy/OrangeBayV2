@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:orange_bay/features/ticket/data/models/orders_model.dart';
 import 'package:orange_bay/features/ticket/presentation/manager/ticket_cubit/ticket_cubit.dart';
 import 'package:orange_bay/features/ticket/presentation/views/widgets/order/orders_body.dart';
+import 'package:orange_bay/models/order_model.dart';
 
 class OrdersBodyBlocBuilder extends StatelessWidget {
   const OrdersBodyBlocBuilder({super.key});

@@ -41,7 +41,7 @@ final class ConfirmOrderFailure extends TicketState {
 final class OrdersLoading extends TicketState {}
 
 final class OrdersSuccess extends TicketState {
-  final List<OrdersModel> ordersModel;
+  final List<OrderModel> ordersModel;
 
   OrdersSuccess(this.ordersModel);
 }

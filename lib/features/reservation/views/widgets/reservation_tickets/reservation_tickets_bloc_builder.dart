@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orange_bay/core/utils/app_colors.dart';
-import 'package:orange_bay/features/reservation/data/models/reservation_ticket_model.dart';
 import 'package:orange_bay/features/reservation/views/manager/reservation_cubit.dart';
 import 'package:orange_bay/features/reservation/views/manager/reservation_state.dart';
 import 'package:orange_bay/features/reservation/views/widgets/reservation_tickets/reservation_ticket_body.dart';
+import 'package:orange_bay/models/order_model.dart';
 
 class ReservationTicketsBody extends StatefulWidget {
   const ReservationTicketsBody({super.key, required this.orderId});

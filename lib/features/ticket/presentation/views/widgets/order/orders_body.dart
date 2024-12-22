@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orange_bay/core/widgets/custom_button.dart';
-import 'package:orange_bay/features/ticket/data/models/orders_model.dart';
 import 'package:orange_bay/features/ticket/presentation/manager/ticket_cubit/ticket_cubit.dart';
 import 'package:orange_bay/features/ticket/presentation/views/widgets/order/orders_list_view.dart';
+import 'package:orange_bay/models/order_model.dart';
 
 class OrdersBody extends StatelessWidget {
   final List<SerialNumber> serialNumbers;

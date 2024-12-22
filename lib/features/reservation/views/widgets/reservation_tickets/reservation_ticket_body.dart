@@ -5,9 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:orange_bay/core/widgets/custom_button.dart';
-import 'package:orange_bay/features/reservation/data/models/reservation_ticket_model.dart';
 import 'package:orange_bay/features/reservation/views/manager/reservation_cubit.dart';
 import 'package:orange_bay/features/reservation/views/widgets/reservation_tickets/reservation_ticket_item.dart';
+import 'package:orange_bay/models/order_model.dart';
 
 class ReservationTicketBody extends StatelessWidget {
   const ReservationTicketBody({
