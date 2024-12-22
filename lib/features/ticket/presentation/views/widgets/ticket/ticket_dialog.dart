@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orange_bay/core/utils/app_toast.dart';
-import 'package:orange_bay/core/widgets/text_form_field.dart';
-import 'package:orange_bay/features/ticket/data/models/order/order_request.dart';
 import 'package:orange_bay/features/ticket/data/models/tickets_model.dart';
 import 'package:orange_bay/features/ticket/presentation/manager/ticket_cubit/ticket_cubit.dart';
+import 'package:orange_bay/features/ticket/presentation/views/widgets/ticket/quntity_input_field.dart';
+import 'package:orange_bay/features/ticket/presentation/views/widgets/ticket/ticket_details_bloc_builder.dart';
 
 import '../../../../../../core/widgets/custom_button.dart';
 
 class TicketDialog extends StatefulWidget {
   const TicketDialog({
     super.key,
-    required this.ticket, required this.index,
+    required this.ticket,
+    required this.index,
+    required this.blocContext,
   });
 
   final Ticket ticket;
   final int index;
+  final BuildContext blocContext;
+
   @override
   State<TicketDialog> createState() => _TicketDialogState();
 }
@@ -106,7 +109,9 @@ class _TicketDialogState extends State<TicketDialog> {
 
   void onAddButtonPressed() {
     // Filter the detailsDto to only include tickets with 'Admin' userType
-    var adminDetails = widget.ticket.detailsDto.where((detail) => detail.userType == 'Admin').toList();
+    var adminDetails = widget.ticket.detailsDto
+        .where((detail) => detail.userType == 'Admin')
+        .toList();
 
     // If no 'Admin' details are found, display a toast and return
     if (adminDetails.isEmpty) {
@@ -127,7 +132,8 @@ class _TicketDialogState extends State<TicketDialog> {
     int childQuantity = int.tryParse(childCountController.text) ?? 0;
 
     // Calculate total price
-    int totalPrice = (adultPrice * adultQuantity) + (childPrice * childQuantity);
+    int totalPrice =
+        (adultPrice * adultQuantity) + (childPrice * childQuantity);
 
     // Check if quantities are valid
     if (adultQuantity == 0 && childQuantity == 0) {
@@ -138,50 +144,24 @@ class _TicketDialogState extends State<TicketDialog> {
       Navigator.pop(context);
       return;
     }
-
-    // Add the ordered ticket to the TicketCubit
-    context.read<TicketCubit>().addOrderedTicket(
-      OrderItem(
-        ticketName: widget.ticket.title,
-        ticketId: widget.ticket.id.toInt(),
-        price: totalPrice,
-        adultQuantity: adultQuantity,
-        childQuantity: childQuantity,
-        ticketCount: adultQuantity + childQuantity,
-      ),
-    );
-
-    // Close the dialog
     Navigator.pop(context);
-  }
-}
-
-class QuantityInputField extends StatelessWidget {
-  final TextEditingController controller;
-  final String hint;
-
-  const QuantityInputField({
-    super.key,
-    required this.controller,
-    required this.hint,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AppTextField(
-      controller: controller,
-      hint: hint,
-      type: TextInputType.number,
-      inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly,
-      ],
-      enabledColor: const Color(0xFF427FB8),
-      focusColor: const Color(0xFF427FB8),
-      validate: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter the $hint';
-        }
-        return null;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      elevation: 0,
+      builder: (BuildContext context) {
+        final cubit = widget.blocContext.read<TicketCubit>();
+        return BlocProvider.value(
+          value: cubit,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: TicketDetailsBlocBuilder(
+              adultQuantity: adultQuantity,
+              childQuantity: childQuantity, ticket: widget.ticket,
+            ),
+          ),
+        );
       },
     );
   }

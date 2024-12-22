@@ -51,12 +51,12 @@ class TicketGridView extends StatelessWidget {
                 onTap: () {
                   showDialog(
                     context: context,
-                    builder: (BuildContext context) {
+                    builder: (BuildContext dialogContext) {
                       return BlocProvider.value(
                         value: cubit,
                         child: TicketDialog(
                           ticket: ticket,
-                          index: index,
+                          index: index, blocContext: context,
                         ),
                       );
                     },

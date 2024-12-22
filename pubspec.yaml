@@ -63,6 +63,8 @@ dependencies:
   path_provider: ^2.1.5
   pretty_dio_logger: ^1.4.0
   dartz: ^0.10.1
+  multi_dropdown: ^3.0.1
+  syncfusion_flutter_datepicker: ^28.1.35
 flutter_native_splash:
   image: assets/images/orange_bay_splash.png
   color: "#0A4673"

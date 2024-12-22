@@ -52,3 +52,12 @@ final class OrdersFailure extends TicketState {
   OrdersFailure(this.message);
 }
 final class GetDevices extends TicketState {}
+final class AdditionalServicesLoading extends TicketState {}
+final class AdditionalServicesSuccess extends TicketState {
+  final List<AdditionalServicesModel> additionalServicesModelList;
+  AdditionalServicesSuccess(this.additionalServicesModelList);
+}
+final class AdditionalServicesFailure extends TicketState {
+  final String message;
+  AdditionalServicesFailure(this.message);
+}

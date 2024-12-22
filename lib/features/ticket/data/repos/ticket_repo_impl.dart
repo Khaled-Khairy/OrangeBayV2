@@ -75,7 +75,7 @@ class TicketRepoImpl implements TicketRepo {
         endPoint: 'http://elgzeraapp.runasp.net/api/AddtionalServices',
       );
       final List<AdditionalServicesModel> additionalServices = [];
-      for (var additionalService in response.data) {
+      for (var additionalService in response.data['value']) {
         additionalServices.add(AdditionalServicesModel.fromJson(additionalService));
       }
       return Right(additionalServices);

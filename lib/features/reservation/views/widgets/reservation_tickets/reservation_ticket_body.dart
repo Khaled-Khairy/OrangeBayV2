@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:orange_bay/core/widgets/custom_button.dart';
 import 'package:orange_bay/features/reservation/data/models/reservation_ticket_model.dart';
 import 'package:orange_bay/features/reservation/views/manager/reservation_cubit.dart';
@@ -11,10 +12,12 @@ import 'package:orange_bay/features/reservation/views/widgets/reservation_ticket
 class ReservationTicketBody extends StatelessWidget {
   const ReservationTicketBody({
     super.key,
-    required this.reservationTicket,
+    required this.reservationTickets,
+    required this.orderID,
   });
 
-  final ReservationTicket reservationTicket;
+  final List<SerialNumber> reservationTickets;
+  final String orderID;
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +27,12 @@ class ReservationTicketBody extends StatelessWidget {
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: reservationTicket.bookingItems.length,
+            itemCount: reservationTickets.length,
             itemBuilder: (context, index) {
               return ReservationTicketListItem(
                 index: index,
-                reservationTicket: reservationTicket,
+                reservationTicket: reservationTickets[index],
+                orderID: orderID,
               );
             },
           ),
@@ -38,10 +42,16 @@ class ReservationTicketBody extends StatelessWidget {
               backgroundColor: const Color(0xFF427FB8),
               text: 'Print',
               textColor: Colors.white,
-              onPressed: () async => await printReceipt(
-                context: context,
-                reservationTicket: reservationTicket,
-              ),
+              onPressed: () async {
+                try {
+                  await printReceipt(
+                    context: context,
+                    reservationTickets: reservationTickets,
+                  );
+                } catch (error) {
+                  log('Error during printing: $error');
+                }
+              },
             ),
           ),
         ],
@@ -49,7 +59,10 @@ class ReservationTicketBody extends StatelessWidget {
     );
   }
 
-  Future<void> printReceipt({required BuildContext context, required ReservationTicket reservationTicket}) async {
+  Future<void> printReceipt({
+    required BuildContext context,
+    required List<SerialNumber> reservationTickets,
+  }) async {
     final cubit = context.read<ReservationCubit>();
 
     await cubit.getDevices();
@@ -57,56 +70,67 @@ class ReservationTicketBody extends StatelessWidget {
       log('No devices found!');
       return;
     }
-    await cubit.printerService.connect(cubit.devices[0]);
 
-    // Generate the content for printing for each booking item
-    for (var item in reservationTicket.bookingItems) {
-      final qrCodeData = generateQRCodeContent(reservationTicket, item);
-      String receiptContent = '''
-Booking ID: ${reservationTicket.bookingId}
-Name: ${reservationTicket.bookingItems.map((e) => e.name).join(', ')}
-Trip Name: ${reservationTicket.ticketName}
-Serial Number: ${item.serialNumber}
-Booking Date: ${item.bookDate}
-Services:
-    ''';
+    final device = cubit.devices.first;
+    try {
+      await cubit.printerService.connect(device);
 
-      if (item.services.isEmpty) {
-        receiptContent += '''Service: None\n''';
-      } else {
-        for (var service in item.services) {
-          receiptContent += '''
-Service Name: ${service.name}
-Price: ${service.price}
-        ''';
-        }
+      for (var reservationTicket in reservationTickets) {
+        final qrCodeData = generateQRCodeContent(reservationTicket);
+        final receiptContent = generateReceiptContent(reservationTicket);
+
+        await cubit.printerService.printReceipt(
+          receiptContent,
+          "------------------------------\n",
+          qrCodeData,
+        );
       }
-
-      // Print the content along with QR Code
-      await cubit.printerService.printReceipt(
-        receiptContent,
-        "------------------------------\n", // divider
-        qrCodeData, // QR Code data
-      );
+    } catch (e) {
+      log('Printing failed: $e');
+    } finally {
+      await cubit.printerService.disconnect();
     }
-
-    await cubit.printerService.disconnect();
   }
 
-  String generateQRCodeContent(ReservationTicket reservationTicket, var bookingItem) {
-    // Include services in the QR code content
-    String servicesContent = bookingItem.services.isEmpty
+  String generateQRCodeContent(SerialNumber reservationTicket) {
+    final servicesContent = reservationTicket.additionalServiceResponses.isEmpty
         ? "Service: None"
-        : bookingItem.services.map((service) => "Service Name: ${service.name}, Price: ${service.price}").join(", ");
+        : reservationTicket.additionalServiceResponses
+            .map((service) =>
+                "Service Name: ${service.name}, Price: ${service.price.toStringAsFixed(2)} SAR")
+            .join(", ");
 
     return '''
-Booking ID: ${reservationTicket.bookingId}
-Name: ${reservationTicket.bookingItems.map((e) => e.name).join(', ')}
-Trip Name: ${reservationTicket.ticketName}
-Serial Number: ${bookingItem.serialNumber}
-Booking Date: ${bookingItem.bookDate}
-Services: $servicesContent\n
-  ''';
+Serial Number: ${reservationTicket.serialNumber}
+Ticket Title: ${reservationTicket.ticketTitle}
+Cruise Name: ${reservationTicket.cruiseName}
+Booking Date: ${DateFormat('dd/MM/yyyy').format(reservationTicket.bookingDate.toLocal())}
+Tour Guide: ${reservationTicket.tourGuide}
+Nationality: ${reservationTicket.nationality}
+Price: ${reservationTicket.price.toStringAsFixed(2)} SAR
+Services: $servicesContent
+''';
   }
 
+  String generateReceiptContent(SerialNumber reservationTicket) {
+    final additionalServices = reservationTicket
+            .additionalServiceResponses.isEmpty
+        ? "Service: None"
+        : reservationTicket.additionalServiceResponses
+            .map((service) =>
+                "Service Name: ${service.name}, Price: ${service.price.toStringAsFixed(2)} SAR")
+            .join("\n");
+
+    return '''
+Serial Number: ${reservationTicket.serialNumber}
+Ticket Title: ${reservationTicket.ticketTitle}
+Cruise Name: ${reservationTicket.cruiseName}
+Booking Date: ${DateFormat('dd/MM/yyyy').format(reservationTicket.bookingDate.toLocal())}
+Tour Guide: ${reservationTicket.tourGuide}
+Nationality: ${reservationTicket.nationality}
+Price: ${reservationTicket.price.toStringAsFixed(2)} SAR
+Additional Services:
+$additionalServices
+''';
+  }
 }

@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
-  const CustomButton(
-      {super.key,
-      required this.backgroundColor,
-      required this.text,
-      this.textColor,
-      this.onPressed});
+  const CustomButton({
+    super.key,
+    required this.backgroundColor,
+    required this.text,
+    this.textColor,
+    this.onPressed,
+    this.isLoading = false,
+  });
 
   final String text;
   final Color backgroundColor;
   final Color? textColor;
-
+  final bool isLoading;
   final void Function()? onPressed;
 
   @override
@@ -22,17 +24,20 @@ class CustomButton extends StatelessWidget {
       child: TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
-            backgroundColor: backgroundColor,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14))),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: textColor,
-            fontSize: 20,
-            fontWeight: FontWeight.normal,
-          ),
+          backgroundColor: backgroundColor,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
+        child: isLoading
+            ? const CircularProgressIndicator(color: Colors.white)
+            : Text(
+                text,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
       ),
     );
   }

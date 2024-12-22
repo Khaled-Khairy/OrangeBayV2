@@ -7,19 +7,22 @@ import 'package:orange_bay/features/reservation/views/manager/reservation_state.
 class ReservationCubit extends Cubit<ReservationState> {
   ReservationCubit(this.reservationRepo) : super(ReservationInitial());
   final ReservationRepoImpl reservationRepo;
-  DateTime dateTime = DateTime.now();
   List<BluetoothDevice> devices = [];
   final AppPrint printerService = AppPrint();
+  DateTime fromDate = DateTime.now();
+  DateTime toDate = DateTime.now().add(const Duration(days: 1));
 
-  void changeDateTime(DateTime dateTime) {
-    this.dateTime = dateTime;
+  void changeDateTimeRange(DateTime newFromDate, DateTime newToDate) {
+    fromDate = newFromDate;
+    toDate = newToDate;
     emit(ReservationDateUpdated());
   }
-
-  Future<void> getReservations() async {
+  Future<void> getReservations({required String dateTo, required String dateFrom,required int type}) async {
     emit(ReservationLoading());
     final result = await reservationRepo.getReservations(
-      dateTime: dateTime.toString(),
+      dateTo: dateTo,
+      dateFrom: dateFrom,
+      type: type,
     );
     result.fold(
       (failure) => emit(ReservationFailed(failure.message)),

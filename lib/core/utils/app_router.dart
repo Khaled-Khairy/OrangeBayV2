@@ -35,8 +35,10 @@ abstract class AppRouter {
   static const String settings = '/settings';
   static const String cardActivation = '/cardActivation';
   static const String tourGuideProfit = "/tourGuideProfit";
-  static const String adminTransactionsHistoryAuth = '/adminTransactionsHistoryAuth';
-  static const String adminTransactionsHistoryView = '/adminTransactionsHistoryView';
+  static const String adminTransactionsHistoryAuth =
+      '/adminTransactionsHistoryAuth';
+  static const String adminTransactionsHistoryView =
+      '/adminTransactionsHistoryView';
   static const String cardActivationView = '/cardActivationView';
   static const String addMoneyAuth = '/addCardAuth';
   static const String addMoneyView = '/addCardView';
@@ -85,13 +87,15 @@ abstract class AppRouter {
         ),
       ),
       GoRoute(
-        path: reservation,
-        builder: (BuildContext context, GoRouterState state) => BlocProvider(
-          create: (context) =>
-              ReservationCubit(ReservationRepoImpl())..getReservations(),
-          child: const ReservationView(),
-        ),
-      ),
+          path: reservation,
+          builder: (BuildContext context, GoRouterState state) {
+            return BlocProvider(
+              create: (context) {
+                return ReservationCubit(ReservationRepoImpl());
+              },
+              child: const ReservationView(),
+            );
+          }),
       GoRoute(
         path: reservationTickets,
         builder: (BuildContext context, GoRouterState state) =>

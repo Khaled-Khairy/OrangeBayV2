@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:orange_bay/features/reservation/data/models/reservation_ticket_model.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -8,13 +9,11 @@ class ReservationQrCode extends StatelessWidget {
     required this.reservationTicket,
   });
 
-  final ReservationTicket reservationTicket;
+  final SerialNumber reservationTicket;
 
   @override
   Widget build(BuildContext context) {
-    String qrContent = generateQRCodeContent(
-      reservationTicket: reservationTicket,
-    );
+    String qrContent = generateQRCodeContent(reservationTicket);
 
     return Center(
       child: QrImageView(
@@ -26,30 +25,30 @@ class ReservationQrCode extends StatelessWidget {
     );
   }
 
-  String generateQRCodeContent({
-    required ReservationTicket reservationTicket,
-  }) {
+  String generateQRCodeContent(SerialNumber reservation) {
     String content = '''
-Booking ID: ${reservationTicket.bookingId}
-Ticket Name: ${reservationTicket.ticketName}
-  ''';
+Reservation Ticket:
+Serial Number: ${reservation.serialNumber}
+Cruise Name: ${reservation.cruiseName}
+Booking Date: ${DateFormat('dd/MM/yyyy').format(reservation.bookingDate)}
+Ticket Title: ${reservation.ticketTitle}
+Tour Guide: ${reservation.tourGuide}
+Nationality: ${reservation.nationality}
+Price: ${reservation.price.toStringAsFixed(2)} SAR
+''';
 
-    for (var item in reservationTicket.bookingItems) {
-      content += '''
-Name: ${item.name}
-Serial Number: ${item.serialNumber}
-Booking Date: ${item.bookDate}
-Services: 
-    ''';
-
-      for (var service in item.services) {
+    if (reservation.additionalServiceResponses.isNotEmpty) {
+      content += 'Additional Services:\n';
+      for (var service in reservation.additionalServiceResponses) {
         content += '''
 Service Name: ${service.name}
-Price: ${service.price}
-      ''';
+Price: ${service.price.toStringAsFixed(2)} SAR
+''';
       }
+    } else {
+      content += 'Additional Services: None\n';
     }
 
-    return content;
+    return content.trim();
   }
 }

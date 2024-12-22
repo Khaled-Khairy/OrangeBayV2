@@ -9,11 +9,11 @@ import 'package:orange_bay/features/reservation/data/repos/reservation_repo.dart
 class ReservationRepoImpl implements ReservationRepo {
   @override
   Future<Either<ServerFailure, List<Reservations>>> getReservations(
-      {required String dateTime}) async {
+      {required String dateTo,
+      required String dateFrom,
+      required int type}) async {
     try {
-      final response = await AppDio.get(
-          endPoint:
-              'http://elgzeraapp.runasp.net/api/Booking/GetByDate?date=$dateTime');
+      final response = await AppDio.get(endPoint: 'http://elgzeraapp.runasp.net/api/orders/GetByDate?Fromdate=$dateFrom&ToDate=$dateTo&Type=$type');
       final List<Reservations> reservations = [];
 
       for (var reservation in response.data['valueOrDefault']) {
@@ -30,11 +30,15 @@ class ReservationRepoImpl implements ReservationRepo {
   }
 
   @override
-  Future<Either<ServerFailure, ReservationTicket>> getReservationTickets({required String orderId}) async {
+  Future<Either<ServerFailure, List<ReservationTicket>>> getReservationTickets(
+      {required String orderId}) async {
     try {
-      final response = await AppDio.get(endPoint: 'http://elgzeraapp.runasp.net/api/Booking/$orderId');
-      final reservationsTicket = ReservationTicket.fromJson(response.data['valueOrDefault']);
-      return Right(reservationsTicket);
+      final response = await AppDio.get(endPoint: 'http://elgzeraapp.runasp.net/api/orders/$orderId');
+      final List<ReservationTicket> reservationTickets = [];
+      for (var reservation in response.data) {
+        reservationTickets.add(ReservationTicket.fromJson(reservation));
+      }
+      return Right(reservationTickets);
     } catch (e) {
       if (e is DioException) {
         return Left(ServerFailure.fromDioException(e));

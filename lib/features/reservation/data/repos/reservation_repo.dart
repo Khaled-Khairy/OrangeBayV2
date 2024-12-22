@@ -4,6 +4,6 @@ import 'package:orange_bay/features/reservation/data/models/reservation_model.da
 import 'package:orange_bay/features/reservation/data/models/reservation_ticket_model.dart';
 
 abstract class ReservationRepo {
-  Future<Either<ServerFailure, List<Reservations>>> getReservations({required String dateTime});
-  Future<Either<ServerFailure, ReservationTicket>> getReservationTickets({required String orderId});
+  Future<Either<ServerFailure, List<Reservations>>> getReservations({required String dateTo, required String dateFrom,required int type});
+  Future<Either<ServerFailure, List<ReservationTicket>>> getReservationTickets({required String orderId});
 }

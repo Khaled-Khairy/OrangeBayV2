@@ -28,7 +28,7 @@ class AppTextField extends StatelessWidget {
   final bool? enabled;
   final Function()? onEditingComplete;
   final List<TextInputFormatter>? inputFormatters;
-
+  final AutovalidateMode? autoValidateMode;
   const AppTextField({
     super.key,
     this.borderRadius,
@@ -62,7 +62,7 @@ class AppTextField extends StatelessWidget {
     this.onEditingComplete,
     this.controllerColor,
     this.hintMaxLine,
-    this.fontWeight,
+    this.fontWeight, this.autoValidateMode,
   });
 
   @override
@@ -139,7 +139,7 @@ class AppTextField extends StatelessWidget {
       focusNode: focusNode,
       onTap: onTap,
       validator: validate,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
+      autovalidateMode: autoValidateMode ?? AutovalidateMode.onUserInteraction,
       onFieldSubmitted: onFieldSubmitted,
       onChanged: onChanged,
       maxLines: maxLine,

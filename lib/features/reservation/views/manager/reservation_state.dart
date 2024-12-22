@@ -27,7 +27,7 @@ final class ReservationDateUpdated extends ReservationState {}
 final class ReservationTicketLoading extends ReservationState {}
 
 final class ReservationTicketSuccess extends ReservationState {
-  final ReservationTicket reservationTicket;
+  final List<ReservationTicket> reservationTicket;
 
   ReservationTicketSuccess(this.reservationTicket);
 }

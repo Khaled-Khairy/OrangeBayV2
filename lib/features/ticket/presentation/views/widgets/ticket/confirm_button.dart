@@ -17,33 +17,13 @@ class ConfirmButton extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: BlocBuilder<TicketCubit, TicketState>(
         builder: (context, state) {
-          if (state is ConfirmOrderLoading) {
-            return Container(
-              height: 50,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: const Color(0xFF427FB8),
-                borderRadius: BorderRadius.circular(14.r),
-              ),
-              child: const Center(
-                child: SizedBox(
-                  height: 30,
-                  width: 30,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
-                  ),
-                ),
-              ),
-            );
-          } else {
             return CustomButton(
               backgroundColor: const Color(0xFF427FB8),
               text: 'Confirm',
+              isLoading: state is TicketLoading,
               textColor: Colors.white,
               onPressed: () => _onConfirm(context),
             );
-          }
         },
       ),
     );
@@ -54,15 +34,15 @@ class ConfirmButton extends StatelessWidget {
 
     if (formKey.currentState!.validate()) {
       if (cubit.orderedTickets.isNotEmpty) {
-        cubit.postOrder(
-          orderRequest: OrderRequest(
-            nationalityId: cubit.selectedNationality!.id.toInt(),
-            cruiseId: cubit.selectedCruise!.id.toInt(),
-            tourGuideId: cubit.selectedGuide!.id.toInt(),
-            harbourId: cubit.selectedHarbour!.id.toInt(),
-            orderItems: cubit.orderedTickets,
-          ),
-        );
+        // cubit.postOrder(
+        //   orderRequest: OrderRequest(
+        //     nationalityId: cubit.selectedNationality!.id.toInt(),
+        //     cruiseId: cubit.selectedCruise!.id.toInt(),
+        //     tourGuideId: cubit.selectedGuide!.id.toInt(),
+        //     harbourId: cubit.selectedHarbour!.id.toInt(),
+        //     orderItems: cubit.orderedTickets,
+        //   ),
+        // );
       } else {
         AppToast.displayToast(
           message: 'Please Select Ticket',

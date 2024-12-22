@@ -8,16 +8,28 @@ import 'package:orange_bay/features/reservation/views/widgets/reservation_item.d
 
 import '../manager/reservation_state.dart';
 
-class ReservationBody extends StatelessWidget {
+class ReservationBody extends StatefulWidget {
   const ReservationBody({super.key});
 
   @override
+  State<ReservationBody> createState() => _ReservationBodyState();
+}
+
+class _ReservationBodyState extends State<ReservationBody> {
+  @override
+  void initState() {
+    final cubit = context.read<ReservationCubit>();
+    cubit.getReservations(
+      dateTo: cubit.toDate.toString(),
+      dateFrom: cubit.fromDate.toString(),
+      type: 1,
+    );
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<ReservationCubit, ReservationState>(
-      buildWhen: (previousState, currentState) =>
-          currentState is ReservationSuccess ||
-          currentState is ReservationLoading ||
-          currentState is ReservationFailed,
+      buildWhen: (previousState, currentState) => currentState is ReservationSuccess || currentState is ReservationLoading || currentState is ReservationFailed,
       builder: (context, state) {
         if (state is ReservationLoading) {
           return const Center(

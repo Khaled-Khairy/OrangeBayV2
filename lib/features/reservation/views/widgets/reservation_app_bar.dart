@@ -3,44 +3,43 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:orange_bay/core/utils/app_colors.dart';
+import 'package:orange_bay/features/reservation/views/widgets/app_bar_drop_down.dart';
 import '../manager/reservation_cubit.dart';
 import '../manager/reservation_state.dart';
+
 class ReservationAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ReservationAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ReservationCubit, ReservationState>(
-      buildWhen: (previousState, currentState) => currentState is ReservationDateUpdated,
+      buildWhen: (previousState, currentState) =>
+          currentState is ReservationDateUpdated,
       builder: (context, state) {
-        DateTime dateTime = context.read<ReservationCubit>().dateTime;
-        String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
+        DateTime fromDate = context.read<ReservationCubit>().fromDate;
+        DateTime toDate = context.read<ReservationCubit>().toDate;
+        String formattedFromDate = DateFormat('dd/MM/yyyy').format(fromDate);
+        String formattedToDate = DateFormat('dd/MM/yyyy').format(toDate);
 
         return AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
           scrolledUnderElevation: 0,
-          title: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Reservation List : ',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
+          clipBehavior: Clip.none,
+          centerTitle: true,
+          toolbarHeight: 120.h,
+          title: Column(
+            children: [
+              Text(
+                '$formattedFromDate - $formattedToDate',
+                style: TextStyle(
+                  color: AppColors.blue,
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
                 ),
-                TextSpan(
-                  text: formattedDate,
-                  style: TextStyle(
-                    color: AppColors.blue,
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                )
-              ],
-            ),
+              ),
+              const AppBarDropDown(),
+            ],
           ),
         );
       },
@@ -48,5 +47,5 @@ class ReservationAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(50.h);
+  Size get preferredSize => Size.fromHeight(80.h);
 }

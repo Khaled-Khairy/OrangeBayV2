@@ -1,99 +1,87 @@
 class ReservationTicket {
-  final num bookingId;
-  final num totalPrice;
-  final num totalAdditionalPrice;
-  final num numberOfAdults;
-  final num numberOfChilds;
-  final String ticketName;
-  final String role;
-  final bool isPrinted;
-  final List<ReservationTicketItem> bookingItems;
+  final int quantity;
+  final List<SerialNumber> serialNumbers;
 
   ReservationTicket({
-    required this.bookingId,
-    required this.totalPrice,
-    required this.totalAdditionalPrice,
-    required this.numberOfAdults,
-    required this.numberOfChilds,
-    required this.ticketName,
-    required this.role,
-    required this.isPrinted,
-    required this.bookingItems,
+    required this.quantity,
+    required this.serialNumbers,
   });
 
   factory ReservationTicket.fromJson(Map<String, dynamic> json) {
     return ReservationTicket(
-      bookingId: json['bookingId'],
-      totalPrice: json['totalPrice'],
-      totalAdditionalPrice: json['totalAddtionalPrice'],
-      numberOfAdults: json['numberOfAdults'],
-      numberOfChilds: json['numberOfChilds'],
-      ticketName: json['ticketName'],
-      role: json['role'],
-      isPrinted: json['isPrinted'],
-      bookingItems: (json['bookingItems'] as List)
-          .map((item) => ReservationTicketItem.fromJson(item))
+      quantity: json['quantity'],
+      serialNumbers: (json['serialNumbers'] as List)
+          .map((item) => SerialNumber.fromJson(item))
           .toList(),
     );
   }
 }
 
-class ReservationTicketItem {
-  final num price;
-  final String name;
+class SerialNumber {
   final String serialNumber;
-  final String? email;
-  final String? phoneNumber;
-  final String bookDate;
-  final String createdOn;
-  final num statues;
-  final List<Service> services;
+  final String tourGuide;
+  final String nationality;
+  final String harbourName;
+  final String ticketTitle;
+  final double price;
+  final DateTime createdAt;
+  final String userName;
+  final int personAge;
+  final DateTime bookingDate;
+  final String cruiseName;
+  final List<AdditionalService> additionalServiceResponses;
 
-  ReservationTicketItem({
-    required this.price,
-    required this.name,
+  SerialNumber({
     required this.serialNumber,
-    this.email,
-    this.phoneNumber,
-    required this.bookDate,
-    required this.createdOn,
-    required this.statues,
-    required this.services,
+    required this.tourGuide,
+    required this.nationality,
+    required this.harbourName,
+    required this.ticketTitle,
+    required this.price,
+    required this.createdAt,
+    required this.userName,
+    required this.personAge,
+    required this.bookingDate,
+    required this.cruiseName,
+    required this.additionalServiceResponses,
   });
 
-  factory ReservationTicketItem.fromJson(Map<String, dynamic> json) {
-    return ReservationTicketItem(
-      price: json['price'],
-      name: json['name'],
-      serialNumber: json['seriamNumber'],
-      email: json['email'] ?? 'None',
-      phoneNumber: json['phoneNumber'] ?? 'None',
-      bookDate: json['bookDate'],
-      createdOn: json['createdOn'],
-      statues: json['statues'],
-      services: (json['services'] as List)
-          .map((service) => Service.fromJson(service))
+  factory SerialNumber.fromJson(Map<String, dynamic> json) {
+    return SerialNumber(
+      serialNumber: json['serialNumber'],
+      tourGuide: json['tourGuide'],
+      nationality: json['nationality'],
+      harbourName: json['harbourName'],
+      ticketTitle: json['ticketTitle'],
+      price: (json['price'] as num).toDouble(),
+      createdAt: DateTime.parse(json['createdAt']),
+      userName: json['userName'],
+      personAge: json['personAge'],
+      bookingDate: DateTime.parse(json['bookingDate']),
+      cruiseName: json['cruiseName'],
+      additionalServiceResponses: (json['addtionalServiceResponses'] as List)
+          .map((item) => AdditionalService.fromJson(item))
           .toList(),
     );
   }
 }
 
-class Service {
-  final num id;
+class AdditionalService {
+  final int id;
   final String name;
-  final num price;
+  final double price;
 
-  Service({
+  AdditionalService({
     required this.id,
     required this.name,
     required this.price,
   });
 
-  factory Service.fromJson(Map<String, dynamic> json) {
-    return Service(
+  factory AdditionalService.fromJson(Map<String, dynamic> json) {
+    return AdditionalService(
       id: json['id'],
       name: json['name'],
-      price: json['price'],
+      price: (json['price'] as num).toDouble(),
     );
   }
 }

@@ -3,6 +3,9 @@ class OrderRequest {
   final int cruiseId;
   final int tourGuideId;
   final int harbourId;
+  final int paymentDone;
+  final int totalPrice;
+  final int orderType;
   final List<OrderItem> orderItems;
 
   OrderRequest({
@@ -10,6 +13,9 @@ class OrderRequest {
     required this.cruiseId,
     required this.tourGuideId,
     required this.harbourId,
+    required this.paymentDone,
+    required this.totalPrice,
+    required this.orderType,
     required this.orderItems,
   });
 
@@ -19,39 +25,68 @@ class OrderRequest {
       'cruiseId': cruiseId,
       'tourGuideId': tourGuideId,
       'harbourId': harbourId,
-      'orderItems': _getDuplicatedOrderItems().map((item) => item.toJson()).toList(),
+      'paymentDone': paymentDone,
+      'totalPrice': totalPrice,
+      'orderType': orderType,
+      'orderItems': orderItems.map((item) => item.toJson()).toList(),
     };
-  }
-  List<OrderItem> _getDuplicatedOrderItems() {
-    return orderItems.expand((item) {
-      return List.generate(item.ticketCount, (_) => item);
-    }).toList();
   }
 }
 
 class OrderItem {
-  final String ticketName;
-  final int ticketId;
-  final num price;
+  final List<OrderItemDetail> orderItemDetails;
   final int adultQuantity;
   final int childQuantity;
-  final int ticketCount;
 
   OrderItem({
-    required this.ticketName,
-    required this.ticketId,
-    required this.price,
+    required this.orderItemDetails,
     required this.adultQuantity,
     required this.childQuantity,
-    required this.ticketCount,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'orderItemDetails': orderItemDetails.map((item) => item.toJson()).toList(),
+      'adultQuantity': adultQuantity,
+      'childQuantity': childQuantity,
+    };
+  }
+}
+
+class OrderItemDetail {
+  final int ticketId;
+  final int ticketPrice;
+  final String phoneNumber;
+  final String name;
+  final String email;
+  final int additionalServicesPrice;
+  final int personAge;
+  final List<int> services;
+  final DateTime bookingDate;
+
+  OrderItemDetail({
+    required this.ticketId,
+    required this.ticketPrice,
+    required this.phoneNumber,
+    required this.name,
+    required this.email,
+    required this.additionalServicesPrice,
+    required this.personAge,
+    required this.services,
+    required this.bookingDate,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'ticketId': ticketId,
-      'price': price,
-      'adultQuantity': adultQuantity,
-      'childQuantity': childQuantity,
+      'ticketPrice': ticketPrice,
+      'phoneNumber': phoneNumber,
+      'name': name,
+      'email': email,
+      'adttionalServicesPrice': additionalServicesPrice,
+      'personAge': personAge,
+      'services': services,
+      'bookingDate': bookingDate.toIso8601String(),
     };
   }
 }

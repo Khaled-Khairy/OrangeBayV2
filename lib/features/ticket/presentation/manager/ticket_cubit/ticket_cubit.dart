@@ -2,6 +2,7 @@ import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orange_bay/core/utils/app_print.dart';
+import 'package:orange_bay/features/ticket/data/models/additional_services_model.dart';
 import 'package:orange_bay/features/ticket/data/models/order/order_response.dart';
 import 'package:orange_bay/features/ticket/data/models/orders_model.dart';
 import 'package:orange_bay/features/ticket/data/models/tickets_model.dart';
@@ -22,10 +23,16 @@ class TicketCubit extends Cubit<TicketState> {
   List<OrderItem> orderedTickets = [];
   List<BluetoothDevice> devices = [];
   final AppPrint printerService = AppPrint();
-  
+  List<AdditionalServicesModel> selectedServices = [];
+
   num get totalPrice {
     return orderedTickets.fold(0.0, (sum, ticket) {
-      return sum + ticket.price;
+      final ticketTotalPrice =
+          ticket.orderItemDetails.fold(0.0, (subSum, detail) {
+        return subSum + detail.ticketPrice.toDouble();
+      });
+
+      return sum + ticketTotalPrice;
     });
   }
 
@@ -59,17 +66,29 @@ class TicketCubit extends Cubit<TicketState> {
       (orderResponse) => emit(ConfirmOrderSuccess(orderResponse)),
     );
   }
+
   Future<void> getOrders({required String orderId}) async {
     emit(OrdersLoading());
     final result = await ticketRepo.getOrders(orderId: orderId);
     result.fold(
-          (failure) => emit(OrdersFailure(failure.message)),
-          (orders) => emit(OrdersSuccess(orders)),
+      (failure) => emit(OrdersFailure(failure.message)),
+      (orders) => emit(OrdersSuccess(orders)),
     );
   }
+
   Future<void> getDevices() async {
     devices.clear();
     devices = await printerService.getBondedDevices();
     emit(GetDevices());
+  }
+
+  Future<void> getAdditionalServices() async {
+    emit(AdditionalServicesLoading());
+    final result = await ticketRepo.getAdditionalServices();
+    result.fold(
+      (failure) => emit(AdditionalServicesFailure(failure.message)),
+      (additionalServices) =>
+          emit(AdditionalServicesSuccess(additionalServices)),
+    );
   }
 }
