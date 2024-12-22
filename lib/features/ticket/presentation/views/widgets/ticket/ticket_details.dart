@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orange_bay/core/utils/app_colors.dart';
 import 'package:orange_bay/core/widgets/custom_button.dart';
 import 'package:orange_bay/features/ticket/data/models/additional_services_model.dart';
+import 'package:orange_bay/features/ticket/data/models/order/order_request.dart';
 import 'package:orange_bay/features/ticket/data/models/tickets_model.dart';
+import 'package:orange_bay/features/ticket/presentation/manager/ticket_cubit/ticket_cubit.dart';
 import 'package:orange_bay/features/ticket/presentation/views/widgets/ticket/services_drop_down.dart';
 import 'package:orange_bay/features/ticket/presentation/views/widgets/ticket/ticket_details_input_field.dart';
 
@@ -17,10 +21,10 @@ class TicketDetails extends StatefulWidget {
     required this.ticket,
   });
 
-  final List<AdditionalServicesModel> additionalServices;
   final int adultQuantity;
   final int childQuantity;
   final Ticket ticket;
+  final List<AdditionalServicesModel> additionalServices;
 
   @override
   State<TicketDetails> createState() => _TicketDetailsState();
@@ -75,24 +79,20 @@ class _TicketDetailsState extends State<TicketDetails> {
                 ),
               ),
             if (widget.adultQuantity > 0)
-              Row(
+              Column(
                 spacing: 2.w,
                 children: [
-                  Expanded(
-                    child: TicketDetailsInputField(
-                      controller: emailController,
-                      hint: 'Email',
-                    ),
+                  TicketDetailsInputField(
+                    controller: emailController,
+                    hint: 'Email',
                   ),
-                  Expanded(
-                    child: TicketDetailsInputField(
-                      controller: phoneNumberController,
-                      hint: 'Phone Number',
-                      type: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                    ),
+                  TicketDetailsInputField(
+                    controller: phoneNumberController,
+                    hint: 'Phone Number',
+                    type: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
                   ),
                 ],
               ),
@@ -112,6 +112,11 @@ class _TicketDetailsState extends State<TicketDetails> {
                       ServicesDropdown(
                         additionalServices: widget.additionalServices,
                         type: 'adult',
+                        onServiceSelected:
+                            (List<AdditionalServicesModel> value) {
+                          final cubit = context.read<TicketCubit>();
+                          cubit.selectedAdultServices[index] = value;
+                        },
                       ),
                     ],
                   );
@@ -142,6 +147,10 @@ class _TicketDetailsState extends State<TicketDetails> {
                       ServicesDropdown(
                         additionalServices: widget.additionalServices,
                         type: 'child',
+                        onServiceSelected: (List<AdditionalServicesModel> value) {
+                          final cubit = context.read<TicketCubit>();
+                          cubit.selectedChildServices[index] = value;
+                        },
                       ),
                     ],
                   );
@@ -152,7 +161,58 @@ class _TicketDetailsState extends State<TicketDetails> {
               backgroundColor: AppColors.blue,
               text: 'Add',
               textColor: Colors.white,
-              onPressed: () {},
+              onPressed: () {
+                final cubit = context.read<TicketCubit>();
+                cubit.addOrderedTicket(
+                  OrderItem(
+                    orderItemDetails: [
+                      ...List.generate(
+                        widget.adultQuantity,
+                        (index) => OrderItemDetail(
+                          name: adultControllers[index].text,
+                          ticketId: widget.ticket.id.toInt(),
+                          ticketPrice: widget
+                              .ticket.detailsDto[index].adultPrice
+                              .toInt(),
+                          phoneNumber: phoneNumberController.text.trim(),
+                          email: emailController.text.trim(),
+                          additionalServicesPrice: 1000,
+                          personAge: 1,
+                          services: context
+                              .read<TicketCubit>()
+                              .selectedAdultServices[index]
+                              .map((service) => service.id)
+                              .toList(),
+                          bookingDate: DateTime.now(),
+                        ),
+                      ),
+                      ...List.generate(
+                        widget.childQuantity,
+                        (index) => OrderItemDetail(
+                          name: adultControllers[index].text,
+                          ticketId: widget.ticket.id.toInt(),
+                          ticketPrice: widget
+                              .ticket.detailsDto[index].adultPrice
+                              .toInt(),
+                          phoneNumber: phoneNumberController.text.trim(),
+                          email: emailController.text.trim(),
+                          additionalServicesPrice: 1000,
+                          personAge: 2,
+                          services: context
+                              .read<TicketCubit>()
+                              .selectedChildServices[index]
+                              .map((service) => service.id)
+                              .toList(),
+                          bookingDate: DateTime.now(),
+                        ),
+                      ),
+                    ],
+                    adultQuantity: widget.adultQuantity,
+                    childQuantity: widget.childQuantity,
+                  ),
+                );
+                context.pop();
+              },
             )
           ],
         ),

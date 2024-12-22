@@ -11,5 +11,4 @@ abstract class TicketRepo {
   Future<Either<ServerFailure, List<AdditionalServicesModel>>> getAdditionalServices();
   Future<Either<ServerFailure, OrderResponse>> postOrder({required OrderRequest orderRequest});
   Future<Either<ServerFailure, List<OrderModel>>> getOrders({required String orderId});
-
 }

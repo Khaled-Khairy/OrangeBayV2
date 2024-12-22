@@ -7,11 +7,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class ServicesDropdown extends StatefulWidget {
   final List<AdditionalServicesModel> additionalServices;
   final String type;
-
+  final ValueChanged<List<AdditionalServicesModel>>
+      onServiceSelected; // Callback
   const ServicesDropdown({
     super.key,
-    required this.additionalServices,
     required this.type,
+    required this.onServiceSelected,
+    required this.additionalServices,
   });
 
   @override
@@ -42,6 +44,7 @@ class _ServicesDropdownState extends State<ServicesDropdown> {
       ).toList(),
       controller: controller,
       onSelectionChange: (selectedItems) {
+        widget.onServiceSelected(selectedItems);
       },
       dropdownDecoration: DropdownDecoration(
         backgroundColor: Colors.white,

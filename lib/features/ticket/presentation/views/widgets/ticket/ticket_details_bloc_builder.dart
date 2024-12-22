@@ -33,6 +33,10 @@ class _TicketDetailsBlocBuilderState extends State<TicketDetailsBlocBuilder> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TicketCubit, TicketState>(
+      buildWhen: (current, previous) =>
+          previous is AdditionalServicesLoading ||
+          previous is AdditionalServicesFailure ||
+          previous is AdditionalServicesSuccess,
       builder: (context, state) {
         if (state is AdditionalServicesLoading) {
           return SizedBox(

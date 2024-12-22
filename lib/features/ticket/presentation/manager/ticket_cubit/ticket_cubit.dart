@@ -23,7 +23,8 @@ class TicketCubit extends Cubit<TicketState> {
   List<OrderItem> orderedTickets = [];
   List<BluetoothDevice> devices = [];
   final AppPrint printerService = AppPrint();
-  List<AdditionalServicesModel> selectedServices = [];
+  List<List<AdditionalServicesModel>> selectedAdultServices = [];
+  List<List<AdditionalServicesModel>> selectedChildServices = [];
 
   num get totalPrice {
     return orderedTickets.fold(0.0, (sum, ticket) {
@@ -91,4 +92,5 @@ class TicketCubit extends Cubit<TicketState> {
           emit(AdditionalServicesSuccess(additionalServices)),
     );
   }
+
 }
