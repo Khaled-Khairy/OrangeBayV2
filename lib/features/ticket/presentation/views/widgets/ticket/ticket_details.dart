@@ -163,34 +163,44 @@ class _TicketDetailsState extends State<TicketDetails> {
 
     final cubit = context.read<TicketCubit>();
 
-    if (widget.ticket.detailsDto.length <
-        widget.adultQuantity + widget.childQuantity) {
+    if (widget.ticket.detailsDto.length < widget.adultQuantity + widget.childQuantity) {
       AppToast.displayToast(
         message: 'Insufficient ticket details available.',
         isError: true,
       );
       return;
     }
+
     final tickets = cubit.ticketsModel?.tickets ?? [];
 
-    // Filter tickets where at least one DetailsDto has userType == 'Admin'
-    //TODO: add filtering by ticket type
+    // Filter the tickets based on the condition
     List<Ticket> filteredTickets = tickets.where((ticket) {
       return ticket.detailsDto.any((detail) => detail.userType == 'Admin');
     }).toList();
+
+    // Ensure there are enough filtered tickets for adults and children
+    if (filteredTickets.length < widget.adultQuantity + widget.childQuantity) {
+      AppToast.displayToast(
+        message: 'Not enough filtered tickets available for the required quantity.',
+        isError: true,
+      );
+      return;
+    }
+
     try {
       cubit.addOrderedTicket(
         OrderItem(
           orderItemDetails: [
+            // Adult order details
             ...List.generate(
               widget.adultQuantity,
-              (index) {
-                final ticket = filteredTickets[index];
+                  (index) {
                 if (index >= filteredTickets.length) {
                   throw RangeError(
                     'Index $index is out of range for adult ticket details.',
                   );
                 }
+                final ticket = filteredTickets[index];
                 return OrderItemDetail(
                   name: ticket.title,
                   ticketId: ticket.id.toInt(),
@@ -210,16 +220,17 @@ class _TicketDetailsState extends State<TicketDetails> {
                 );
               },
             ),
+            // Child order details
             ...List.generate(
               widget.childQuantity,
-              (index) {
-                final ticket = filteredTickets[index];
-                final childIndex = widget.childQuantity + index;
+                  (index) {
+                final childIndex = widget.adultQuantity + index;
                 if (childIndex >= filteredTickets.length) {
                   throw RangeError(
                     'Index $childIndex is out of range for child ticket details.',
                   );
                 }
+                final ticket = filteredTickets[childIndex];
                 return OrderItemDetail(
                   name: ticket.title,
                   ticketId: ticket.id.toInt(),

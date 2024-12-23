@@ -26,7 +26,7 @@ class TicketOrderedListItem extends StatelessWidget {
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
         title: Text(
-          orderedTicket.orderItemDetails.first.name,
+          orderedTicket.orderItemDetails[index].name,
           style: TextStyle(
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
@@ -52,7 +52,7 @@ class TicketOrderedListItem extends StatelessWidget {
             ),
             4.verticalSpace,
             Text(
-              'Price: \$${orderedTicket.orderItemDetails.last.ticketPrice}',
+              'Price: \$${orderedTicket.orderItemDetails[index].ticketPrice}',
               style: TextStyle(
                 fontSize: 16.sp,
                 color: Colors.green[700],
