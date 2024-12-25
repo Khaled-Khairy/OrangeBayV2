@@ -39,13 +39,23 @@ class TicketCubit extends Cubit<TicketState> {
       },
     );
   }
-
+  int calculateTicketPrice(OrderItem orderedTicket) {
+    final userRole = PreferenceUtils.getString(PrefKeys.userType);
+    final ticket = ticketsModel!.tickets.firstWhere((ticket) => ticket.detailsDto.any((detail) => detail.userType == userRole));
+    final userDetails = ticket.detailsDto.firstWhere((detail) => detail.userType == userRole);
+    return (orderedTicket.adultQuantity * userDetails.adultPrice).toInt() + (orderedTicket.childQuantity * userDetails.adultPrice).toInt();
+  }
   void addOrderedTicket(OrderItem orderedTicket) {
+    totalPrice += calculateTicketPrice(orderedTicket);
+
     orderedTickets.add(orderedTicket);
     emit(TicketUpdated(orderedTickets));
   }
 
   void removeOrderedTicketByIndex(int index) {
+    final removedTicket = orderedTickets[index];
+
+    totalPrice -= calculateTicketPrice(removedTicket);
     orderedTickets.removeAt(index);
     emit(TicketUpdated(orderedTickets));
   }
@@ -82,25 +92,5 @@ class TicketCubit extends Cubit<TicketState> {
       (additionalServices) =>
           emit(AdditionalServicesSuccess(additionalServices)),
     );
-  }
-  num calculateTotalTicketPrice({required int index}) {
-    num totalPrice = 0;
-
-    for (var orderedTicket in orderedTickets) {
-      final adultTicket = orderedTicket.adultQuantity;
-      final childTicket = orderedTicket.childQuantity;
-
-      // Get the ticket prices based on the user role
-      final userRole = PreferenceUtils.getString(PrefKeys.userType);
-      final ticket = ticketsModel!.tickets[index];
-      final userDetails = ticket.detailsDto.firstWhere((detail) => detail.userType == userRole);
-
-      final adultPrice = userDetails.adultPrice;
-      final childPrice = userDetails.childPrice;
-
-      totalPrice += (adultTicket * adultPrice) + (childTicket * childPrice);
-    }
-
-    return totalPrice;
   }
 }
