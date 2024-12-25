@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orange_bay/core/utils/app_toast.dart';
+import 'package:orange_bay/core/utils/shared_preferences.dart';
 import 'package:orange_bay/features/ticket/data/models/tickets_model.dart';
 import 'package:orange_bay/features/ticket/presentation/manager/ticket_cubit/ticket_cubit.dart';
 import 'package:orange_bay/features/ticket/presentation/views/widgets/ticket/quntity_input_field.dart';
@@ -108,19 +109,18 @@ class _TicketDialogState extends State<TicketDialog> {
   }
 
   void onAddButtonPressed() {
-    var adminDetails = widget.ticket.detailsDto
-        .where((detail) => detail.userType == 'Admin')
+    final userRole = PreferenceUtils.getString(PrefKeys.userType);
+    List<DetailsDto> filteredDetails = widget.ticket.detailsDto
+        .where((detail) => detail.userType == userRole)
         .toList();
-    if (adminDetails.isEmpty) {
+    if (filteredDetails.isEmpty) {
       AppToast.displayToast(
-        message: 'No Admin tickets available.',
+        message: 'No tickets available.',
         isError: true,
       );
       Navigator.pop(context);
       return;
     }
-    int adultPrice = adminDetails.first.adultPrice.toInt();
-    int childPrice = adminDetails.first.childPrice.toInt();
 
     int adultQuantity = int.tryParse(adultCountController.text) ?? 0;
     int childQuantity = int.tryParse(childCountController.text) ?? 0;
@@ -148,7 +148,7 @@ class _TicketDialogState extends State<TicketDialog> {
             child: TicketDetailsBlocBuilder(
               adultQuantity: adultQuantity,
               childQuantity: childQuantity,
-              ticket: widget.ticket,
+              filteredDetails: filteredDetails,
             ),
           ),
         );

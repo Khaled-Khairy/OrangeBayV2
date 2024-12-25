@@ -10,13 +10,12 @@ class TicketDetailsBlocBuilder extends StatefulWidget {
   const TicketDetailsBlocBuilder({
     super.key,
     required this.adultQuantity,
-    required this.childQuantity,
-    required this.ticket,
+    required this.childQuantity, required this.filteredDetails,
   });
 
   final int adultQuantity;
   final int childQuantity;
-  final Ticket ticket;
+  final List<DetailsDto> filteredDetails;
 
   @override
   State<TicketDetailsBlocBuilder> createState() => _TicketDetailsBlocBuilderState();
@@ -58,7 +57,7 @@ class _TicketDetailsBlocBuilderState extends State<TicketDetailsBlocBuilder> {
             additionalServices: state.additionalServicesModelList,
             adultQuantity: widget.adultQuantity,
             childQuantity: widget.childQuantity,
-            ticket: widget.ticket,
+            filteredDetails: widget.filteredDetails,
           );
         } else {
           return SizedBox(

@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orange_bay/core/utils/app_colors.dart';
 import 'package:orange_bay/core/utils/app_toast.dart';
+import 'package:orange_bay/core/utils/shared_preferences.dart';
 import 'package:orange_bay/core/widgets/custom_button.dart';
 import 'package:orange_bay/features/ticket/data/models/additional_services_model.dart';
 import 'package:orange_bay/features/ticket/data/models/order/order_request.dart';
@@ -18,13 +19,12 @@ class TicketDetails extends StatefulWidget {
     super.key,
     required this.additionalServices,
     required this.adultQuantity,
-    required this.childQuantity,
-    required this.ticket,
+    required this.childQuantity, required this.filteredDetails,
   });
 
   final int adultQuantity;
   final int childQuantity;
-  final Ticket ticket;
+  final List<DetailsDto> filteredDetails;
   final List<AdditionalServicesModel> additionalServices;
 
   @override
@@ -153,7 +153,7 @@ class _TicketDetailsState extends State<TicketDetails> {
 
     final cubit = context.read<TicketCubit>();
 
-    if (widget.ticket.detailsDto.length < widget.adultQuantity + widget.childQuantity) {
+    if (widget.filteredDetails.length < widget.adultQuantity + widget.childQuantity) {
       AppToast.displayToast(
         message: 'Insufficient ticket details available.',
         isError: true,
@@ -165,7 +165,8 @@ class _TicketDetailsState extends State<TicketDetails> {
 
     // Filter the tickets based on the condition
     List<Ticket> filteredTickets = tickets.where((ticket) {
-      return ticket.detailsDto.any((detail) => detail.userType == 'Admin');
+      final userRole = PreferenceUtils.getString(PrefKeys.userType);
+      return ticket.detailsDto.any((detail) => detail.userType == userRole);
     }).toList();
 
     // Ensure there are enough filtered tickets for adults and children
