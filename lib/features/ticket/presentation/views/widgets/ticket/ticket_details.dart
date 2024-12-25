@@ -136,26 +136,12 @@ class _TicketDetailsState extends State<TicketDetails> {
         );
         return false;
       }
-      if (context.read<TicketCubit>().selectedAdultServices[i].isEmpty) {
-        AppToast.displayToast(
-          message: 'Please select services for all adults.',
-          isError: true,
-        );
-        return false;
-      }
     }
 
     for (var i = 0; i < widget.childQuantity; i++) {
       if (childControllers[i].text.trim().isEmpty) {
         AppToast.displayToast(
           message: 'All child names must be filled.',
-          isError: true,
-        );
-        return false;
-      }
-      if (context.read<TicketCubit>().selectedChildServices[i].isEmpty) {
-        AppToast.displayToast(
-          message: 'Please select services for all children.',
           isError: true,
         );
         return false;
