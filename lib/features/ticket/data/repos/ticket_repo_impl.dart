@@ -68,8 +68,7 @@ class TicketRepoImpl implements TicketRepo {
   }
 
   @override
-  Future<Either<ServerFailure, List<AdditionalServicesModel>>>
-      getAdditionalServices() async {
+  Future<Either<ServerFailure, List<AdditionalServicesModel>>> getAdditionalServices() async {
     try {
       final response = await AppDio.get(
         endPoint: 'http://elgzeraapp.runasp.net/api/AddtionalServices',

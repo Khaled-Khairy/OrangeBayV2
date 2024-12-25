@@ -42,10 +42,8 @@ class _TicketDetailsState extends State<TicketDetails> {
     super.initState();
     emailController = TextEditingController();
     phoneNumberController = TextEditingController();
-    adultControllers =
-        List.generate(widget.adultQuantity, (_) => TextEditingController());
-    childControllers =
-        List.generate(widget.childQuantity, (_) => TextEditingController());
+    adultControllers = List.generate(widget.adultQuantity, (_) => TextEditingController());
+    childControllers = List.generate(widget.childQuantity, (_) => TextEditingController());
   }
 
   @override
@@ -68,8 +66,7 @@ class _TicketDetailsState extends State<TicketDetails> {
     );
   }
 
-  Widget _buildInputField(TextEditingController controller, String hint,
-      {TextInputType? type, List<TextInputFormatter>? inputFormatters}) {
+  Widget _buildInputField(TextEditingController controller, String hint, {TextInputType? type, List<TextInputFormatter>? inputFormatters}) {
     return TicketDetailsInputField(
       controller: controller,
       hint: hint,
@@ -78,18 +75,13 @@ class _TicketDetailsState extends State<TicketDetails> {
     );
   }
 
-  Widget _buildServicesDropdown(
-      List<AdditionalServicesModel> additionalServices,
-      String type,
-      int index) {
+  Widget _buildServicesDropdown(List<AdditionalServicesModel> additionalServices, String type, int index) {
     final cubit = context.read<TicketCubit>();
 
     if (type == 'adult' && cubit.selectedAdultServices.length <= index) {
-      cubit.selectedAdultServices
-          .add(List<AdditionalServicesModel>.empty(growable: true));
+      cubit.selectedAdultServices.add(List<AdditionalServicesModel>.empty(growable: true));
     } else if (type == 'child' && cubit.selectedChildServices.length <= index) {
-      cubit.selectedChildServices
-          .add(List<AdditionalServicesModel>.empty(growable: true));
+      cubit.selectedChildServices.add(List<AdditionalServicesModel>.empty(growable: true));
     }
 
     return ServicesDropdown(
@@ -105,8 +97,7 @@ class _TicketDetailsState extends State<TicketDetails> {
     );
   }
 
-  List<Widget> _buildPersonDetails(
-      int quantity, List<TextEditingController> controllers, String type) {
+  List<Widget> _buildPersonDetails(int quantity, List<TextEditingController> controllers, String type) {
     return List.generate(
       quantity,
       (index) => Column(
@@ -125,8 +116,7 @@ class _TicketDetailsState extends State<TicketDetails> {
 
   bool _validateInputs() {
     if (widget.childQuantity < 0) {
-      if (emailController.text.trim().isEmpty ||
-          phoneNumberController.text.trim().isEmpty) {
+      if (emailController.text.trim().isEmpty || phoneNumberController.text.trim().isEmpty) {
         AppToast.displayToast(
           message: 'Email and phone number cannot be empty.',
           isError: true,
