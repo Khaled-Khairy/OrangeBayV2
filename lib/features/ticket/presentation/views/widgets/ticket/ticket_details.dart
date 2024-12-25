@@ -78,10 +78,15 @@ class _TicketDetailsState extends State<TicketDetails> {
   Widget _buildServicesDropdown(List<AdditionalServicesModel> additionalServices, String type, int index) {
     final cubit = context.read<TicketCubit>();
 
-    if (type == 'adult' && cubit.selectedAdultServices.length <= index) {
-      cubit.selectedAdultServices.add(List<AdditionalServicesModel>.empty(growable: true));
-    } else if (type == 'child' && cubit.selectedChildServices.length <= index) {
-      cubit.selectedChildServices.add(List<AdditionalServicesModel>.empty(growable: true));
+    // Ensure that the selected services lists are initialized up to the current index
+    if (type == 'adult') {
+      while (cubit.selectedAdultServices.length <= index) {
+        cubit.selectedAdultServices.add([]); // Add an empty list for uninitialized indices
+      }
+    } else if (type == 'child') {
+      while (cubit.selectedChildServices.length <= index) {
+        cubit.selectedChildServices.add([]); // Add an empty list for uninitialized indices
+      }
     }
 
     return ServicesDropdown(
@@ -115,20 +120,25 @@ class _TicketDetailsState extends State<TicketDetails> {
   }
 
   bool _validateInputs() {
-    if (widget.childQuantity < 0) {
-      if (emailController.text.trim().isEmpty || phoneNumberController.text.trim().isEmpty) {
-        AppToast.displayToast(
-          message: 'Email and phone number cannot be empty.',
-          isError: true,
-        );
-        return false;
-      }
+    if (emailController.text.trim().isEmpty || phoneNumberController.text.trim().isEmpty) {
+      AppToast.displayToast(
+        message: 'Email and phone number cannot be empty.',
+        isError: true,
+      );
+      return false;
     }
 
     for (var i = 0; i < widget.adultQuantity; i++) {
       if (adultControllers[i].text.trim().isEmpty) {
         AppToast.displayToast(
           message: 'All adult names must be filled.',
+          isError: true,
+        );
+        return false;
+      }
+      if (context.read<TicketCubit>().selectedAdultServices[i].isEmpty) {
+        AppToast.displayToast(
+          message: 'Please select services for all adults.',
           isError: true,
         );
         return false;
@@ -143,6 +153,13 @@ class _TicketDetailsState extends State<TicketDetails> {
         );
         return false;
       }
+      if (context.read<TicketCubit>().selectedChildServices[i].isEmpty) {
+        AppToast.displayToast(
+          message: 'Please select services for all children.',
+          isError: true,
+        );
+        return false;
+      }
     }
 
     return true;
@@ -152,104 +169,85 @@ class _TicketDetailsState extends State<TicketDetails> {
     if (!_validateInputs()) return;
 
     final cubit = context.read<TicketCubit>();
-
-    if (widget.filteredDetails.length < widget.adultQuantity + widget.childQuantity) {
-      AppToast.displayToast(
-        message: 'Insufficient ticket details available.',
-        isError: true,
-      );
-      return;
-    }
-
     final tickets = cubit.ticketsModel?.tickets ?? [];
-
-    // Filter the tickets based on the condition
-    List<Ticket> filteredTickets = tickets.where((ticket) {
+    final filteredTickets = tickets.where((ticket) {
       final userRole = PreferenceUtils.getString(PrefKeys.userType);
       return ticket.detailsDto.any((detail) => detail.userType == userRole);
     }).toList();
 
-    // Ensure there are enough filtered tickets for adults and children
     if (filteredTickets.length < widget.adultQuantity + widget.childQuantity) {
       AppToast.displayToast(
-        message: 'Not enough filtered tickets available for the required quantity.',
+        message: 'Not enough tickets available for the required quantity.',
         isError: true,
       );
       return;
     }
 
     try {
+      final orderDetails = <OrderItemDetail>[];
+      final userRole = PreferenceUtils.getString(PrefKeys.userType);
+
+      for (int i = 0; i < widget.adultQuantity; i++) {
+        if (i >= filteredTickets.length) {
+          throw RangeError('Index $i is out of range for adult tickets.');
+        }
+
+        final ticket = filteredTickets[i];
+        orderDetails.add(
+          OrderItemDetail(
+            name: ticket.title,
+            ticketId: ticket.id.toInt(),
+            ticketPrice: ticket.detailsDto
+                .firstWhere((detail) => detail.userType == userRole)
+                .adultPrice
+                .toInt(),
+            phoneNumber: phoneNumberController.text.trim(),
+            email: emailController.text.trim(),
+            additionalServicesPrice: cubit.selectedAdultServices[i].fold(0, (sum, service) => sum + service.childPrice),
+            personAge: 1,
+            services: cubit.selectedAdultServices[i].map((service) => service.id).toList(),
+            bookingDate: DateTime.now(),
+          ),
+        );
+      }
+
+      for (int i = 0; i < widget.childQuantity; i++) {
+        final childIndex = widget.adultQuantity + i;
+        if (childIndex >= filteredTickets.length) {
+          throw RangeError('Index $childIndex is out of range for child tickets.');
+        }
+
+        final ticket = filteredTickets[childIndex];
+        orderDetails.add(
+          OrderItemDetail(
+            name: ticket.title,
+            ticketId: ticket.id.toInt(),
+            ticketPrice: ticket.detailsDto
+                .firstWhere((detail) => detail.userType == userRole)
+                .childPrice
+                .toInt(),
+            phoneNumber: phoneNumberController.text.trim(),
+            email: emailController.text.trim(),
+            additionalServicesPrice: cubit.selectedChildServices[i].fold(0, (sum, service) => sum + service.childPrice),
+            personAge: 2,
+            services: cubit.selectedChildServices[i].map((service) => service.id).toList(),
+            bookingDate: DateTime.now(),
+          ),
+        );
+      }
+
       cubit.addOrderedTicket(
         OrderItem(
-          orderItemDetails: [
-            // Adult order details
-            ...List.generate(
-              widget.adultQuantity,
-                  (index) {
-                if (index >= filteredTickets.length) {
-                  throw RangeError(
-                    'Index $index is out of range for adult ticket details.',
-                  );
-                }
-                final ticket = filteredTickets[index];
-                return OrderItemDetail(
-                  name: ticket.title,
-                  ticketId: ticket.id.toInt(),
-                  ticketPrice: ticket.detailsDto
-                      .firstWhere((detail) => detail.userType == 'Admin')
-                      .adultPrice
-                      .toInt(),
-                  phoneNumber: phoneNumberController.text.trim(),
-                  email: emailController.text.trim(),
-                  additionalServicesPrice: cubit.selectedChildServices[index]
-                      .fold(0, (sum, service) => sum + service.childPrice),
-                  personAge: 1,
-                  services: cubit.selectedAdultServices[index]
-                      .map((service) => service.id)
-                      .toList(),
-                  bookingDate: DateTime.now(),
-                );
-              },
-            ),
-            // Child order details
-            ...List.generate(
-              widget.childQuantity,
-                  (index) {
-                final childIndex = widget.adultQuantity + index;
-                if (childIndex >= filteredTickets.length) {
-                  throw RangeError(
-                    'Index $childIndex is out of range for child ticket details.',
-                  );
-                }
-                final ticket = filteredTickets[childIndex];
-                return OrderItemDetail(
-                  name: ticket.title,
-                  ticketId: ticket.id.toInt(),
-                  ticketPrice: ticket.detailsDto
-                      .firstWhere((detail) => detail.userType == 'Admin')
-                      .childPrice
-                      .toInt(),
-                  phoneNumber: phoneNumberController.text.trim(),
-                  email: emailController.text.trim(),
-                  additionalServicesPrice: cubit.selectedChildServices[index]
-                      .fold(0, (sum, service) => sum + service.childPrice),
-                  personAge: 2,
-                  services: cubit.selectedChildServices[index]
-                      .map((service) => service.id)
-                      .toList(),
-                  bookingDate: DateTime.now(),
-                );
-              },
-            ),
-          ],
+          orderItemDetails: orderDetails,
           adultQuantity: widget.adultQuantity,
           childQuantity: widget.childQuantity,
         ),
       );
+
       context.pop();
     } catch (e) {
       AppToast.displayToast(
-        message: e.toString(),
+        message: 'Error: ${e.toString()}',
         isError: true,
       );
     }
