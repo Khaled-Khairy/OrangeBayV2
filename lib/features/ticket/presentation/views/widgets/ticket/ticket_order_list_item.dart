@@ -27,7 +27,7 @@ class TicketOrderedListItem extends StatelessWidget {
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
         title: Text(
-          orderedTicket.orderItemDetails[0].name,
+          orderedTicket.orderItemDetails[index].name,
           style: TextStyle(
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
