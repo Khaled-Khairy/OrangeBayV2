@@ -2,6 +2,7 @@ import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orange_bay/core/utils/app_print.dart';
+import 'package:orange_bay/core/utils/shared_preferences.dart';
 import 'package:orange_bay/features/ticket/data/models/additional_services_model.dart';
 import 'package:orange_bay/features/ticket/data/models/order/order_response.dart';
 import 'package:orange_bay/features/ticket/data/models/tickets_model.dart';
@@ -26,7 +27,7 @@ class TicketCubit extends Cubit<TicketState> {
   List<List<AdditionalServicesModel>> selectedAdultServices = [];
   List<List<AdditionalServicesModel>> selectedChildServices = [];
   Ticket? selectedTicket;
-
+  int totalPrice = 0;
   Future<void> getAllTickets() async {
     emit(TicketLoading());
     final result = await ticketRepo.getAllTickets();
@@ -81,5 +82,25 @@ class TicketCubit extends Cubit<TicketState> {
       (additionalServices) =>
           emit(AdditionalServicesSuccess(additionalServices)),
     );
+  }
+  num calculateTotalTicketPrice({required int index}) {
+    num totalPrice = 0;
+
+    for (var orderedTicket in orderedTickets) {
+      final adultTicket = orderedTicket.adultQuantity;
+      final childTicket = orderedTicket.childQuantity;
+
+      // Get the ticket prices based on the user role
+      final userRole = PreferenceUtils.getString(PrefKeys.userType);
+      final ticket = ticketsModel!.tickets[index];
+      final userDetails = ticket.detailsDto.firstWhere((detail) => detail.userType == userRole);
+
+      final adultPrice = userDetails.adultPrice;
+      final childPrice = userDetails.childPrice;
+
+      totalPrice += (adultTicket * adultPrice) + (childTicket * childPrice);
+    }
+
+    return totalPrice;
   }
 }

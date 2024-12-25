@@ -29,7 +29,6 @@ class TicketsOrderedList extends StatelessWidget {
               final ticket = cubit.ticketsModel!.tickets[index];
               final userDetails = ticket.detailsDto.firstWhere((detail) => detail.userType == userRole);
               final ticketPrice = (orderedTickets[index].adultQuantity * userDetails.adultPrice) + (orderedTickets[index].childQuantity * userDetails.adultPrice);
-
               return TicketOrderedListItem(
                 orderedTicket: orderedTickets[index],
                 index: index,
