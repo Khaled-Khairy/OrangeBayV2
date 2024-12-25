@@ -7,6 +7,7 @@ import 'package:orange_bay/core/utils/app_nfc.dart';
 import 'package:orange_bay/core/utils/app_router.dart';
 import 'package:orange_bay/core/utils/app_toast.dart';
 import 'package:orange_bay/core/utils/assets.dart';
+import 'package:orange_bay/core/utils/shared_preferences.dart';
 import 'package:orange_bay/core/widgets/text_form_field.dart';
 import 'package:orange_bay/features/app_manager/app_manager_cubit.dart';
 import 'package:orange_bay/features/app_manager/app_manager_state.dart';
@@ -215,12 +216,15 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  void onLoginSuccess() {
+  void onLoginSuccess() async {
     String role = cubit.decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-    if (role == "Admin") {
-      GoRouter.of(context).pushReplacement(AppRouter.admin);
-    } else if (role == "Employee") {
-      GoRouter.of(context).pushReplacement(AppRouter.cashier);
+    await PreferenceUtils.setString(PrefKeys.userType, role);
+    if(mounted) {
+      if (role == "Admin") {
+        GoRouter.of(context).pushReplacement(AppRouter.admin);
+      } else if (role == "Employee") {
+        GoRouter.of(context).pushReplacement(AppRouter.cashier);
+      }
     }
   }
 }

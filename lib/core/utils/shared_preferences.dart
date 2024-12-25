@@ -4,6 +4,7 @@ enum PrefKeys {
   accessToken,
   userName,
   baseUrl,
+  userType
 }
 
 class PreferenceUtils {
