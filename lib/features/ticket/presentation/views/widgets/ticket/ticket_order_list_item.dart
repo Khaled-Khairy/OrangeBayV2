@@ -8,14 +8,15 @@ class TicketOrderedListItem extends StatelessWidget {
   const TicketOrderedListItem({
     super.key,
     required this.orderedTicket,
-    required this.index,
+    required this.index, required this.ticketPrice,
   });
 
   final OrderItem orderedTicket;
   final int index;
-
+  final num ticketPrice;
   @override
   Widget build(BuildContext context) {
+
     return Card(
       elevation: 4,
       margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
@@ -26,7 +27,7 @@ class TicketOrderedListItem extends StatelessWidget {
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
         title: Text(
-          orderedTicket.orderItemDetails[index].name,
+          orderedTicket.orderItemDetails[0].name,
           style: TextStyle(
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
@@ -52,7 +53,7 @@ class TicketOrderedListItem extends StatelessWidget {
             ),
             4.verticalSpace,
             Text(
-              'Price: \$${orderedTicket.orderItemDetails[index].ticketPrice}',
+              'Price: \$$ticketPrice',
               style: TextStyle(
                 fontSize: 16.sp,
                 color: Colors.green[700],

@@ -23,16 +23,6 @@ class TicketsModel {
       tickets: List<Ticket>.from(json['tickets'].map((x) => Ticket.fromJson(x))),
     );
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'harbour': harbour.map((x) => x.toJson()).toList(),
-      'crusies': cruises.map((x) => x.toJson()).toList(),
-      'nationalityDtos': nationalityDtos.map((x) => x.toJson()).toList(),
-      'tourGuideDtos': tourGuideDtos.map((x) => x.toJson()).toList(),
-      'tickets': tickets.map((x) => x.toJson()).toList(),
-    };
-  }
 }
 
 class Harbour {
@@ -60,15 +50,6 @@ class Harbour {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'address': address,
-      'description': description,
-      'imageUrl': imageUrl,
-    };
-  }
 }
 
 class Cruise {
@@ -90,13 +71,6 @@ class Cruise {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'status': status,
-    };
-  }
 }
 
 class Nationality {
@@ -113,13 +87,6 @@ class Nationality {
       id: json['id'],
       name: json['name'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
   }
 }
 
@@ -151,16 +118,6 @@ class TourGuide {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'phoneNumber': phoneNumber,
-      'email': email,
-      'profitRate': profitRate,
-      'status': status,
-    };
-  }
 }
 
 class Ticket {
@@ -215,24 +172,6 @@ class Ticket {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'description': description,
-      'images': images,
-      'ticketCategoryId': ticketCategoryId,
-      'ticketCategory': ticketCategory,
-      'saleCenter': saleCenter,
-      'saleCenterId': saleCenterId,
-      'tax': tax,
-      'currency': currency,
-      'addtionalServices': addtionalServices.map((x) => x.toJson()).toList(),
-      'status': status,
-      'days': days.map((x) => x.toJson()).toList(),
-      'detailsDto': detailsDto.map((x) => x.toJson()).toList(),
-    };
-  }
 }
 
 class AdditionalService {
@@ -251,12 +190,6 @@ class AdditionalService {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
-  }
 }
 
 class Day {
@@ -275,12 +208,6 @@ class Day {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
-  }
 }
 
 class DetailsDto {
@@ -308,13 +235,4 @@ class DetailsDto {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'fromDate': fromDate,
-      'toDate': toDate,
-      'adultPrice': adultPrice,
-      'childPrice': childPrice,
-      'userType': userType,
-    };
-  }
 }

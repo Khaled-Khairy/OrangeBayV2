@@ -25,6 +25,7 @@ class TicketCubit extends Cubit<TicketState> {
   final AppPrint printerService = AppPrint();
   List<List<AdditionalServicesModel>> selectedAdultServices = [];
   List<List<AdditionalServicesModel>> selectedChildServices = [];
+  Ticket? selectedTicket;
 
   Future<void> getAllTickets() async {
     emit(TicketLoading());
@@ -81,5 +82,4 @@ class TicketCubit extends Cubit<TicketState> {
           emit(AdditionalServicesSuccess(additionalServices)),
     );
   }
-
 }

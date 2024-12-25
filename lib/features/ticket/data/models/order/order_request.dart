@@ -86,7 +86,7 @@ class OrderItemDetail {
       'adttionalServicesPrice': additionalServicesPrice,
       'personAge': personAge,
       'services': services,
-      'bookingDate': bookingDate.toIso8601String(),
+      'bookingDate': bookingDate.toString(),
     };
   }
 }
